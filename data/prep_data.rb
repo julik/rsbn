@@ -27,6 +27,7 @@ File.open("cis_raw.txt") do | f |
       req_url = ELEV_URI % [lat, lon]
       elev = open(req_url).read.scan(/>(.+)</).flatten[0].to_f
       
+      # In the future - "db.push_back(Beacon(\"%s\"));\n"
       out.puts [channel, name, callsign, vor_freq, lat, lon, elev].join('|')
     end
   end
