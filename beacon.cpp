@@ -23,7 +23,7 @@ Beacon::Beacon(char *line)
 void Beacon::fillCoords()
 {
     // Compute the absolute coordinates
-    XPLMWorldToLocal(lat, lon, elev, *locX, *locY, *locZ);
+    XPLMWorldToLocal(lat, lon, elev, &locX, &locY, &locZ);
 }
 
 // Get the absolute distance to aircraft, in meters
