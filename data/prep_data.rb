@@ -8,8 +8,8 @@
 ELEV_URI = "http://gisdata.usgs.gov/xmlwebservices2/elevation_service.asmx/getElevation?X_Value=%d&Y_Value=%d&Elevation_Units=METERS&Source_Layer=-1&Elevation_Only=true"
 
 require "open-uri"
-File.open("ussr_raw.txt") do | f |
-  File.open("ussr.dat", "w") do | out |
+File.open("cis_raw.txt") do | f |
+  File.open("cis.dat", "w") do | out |
     7.times { f.readline }
   
     until f.eof? do
