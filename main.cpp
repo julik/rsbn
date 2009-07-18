@@ -5,21 +5,25 @@
 static Database rsbn = NULL;
 static XPLMWindowID gWindow = NULL;
 
+inline int clamp(int min, int value, int max) {
+    return value > max ? max : (value < min ? min : value);
+}
+
 // Data access callbacks. All X-Plane callbacks for data sets/gets need a void refcon pointer at the start
 int getStrobe(void* inRefcon) {
     return rsbn.selStrobe;
 }
 
 void setStrobe(void* inRefcon, int newStrobe) {
-    rsbn.selStrobe = newStrobe;
+    rsbn.selStrobe = clamp(0, newStrobe, 3);
 }
 
 int getNul(void* inRefcon) {
     return rsbn.selNul;
 }
 
-void setNul(void* inRefcon, int nul) {
-    rsbn.selNul = nul;
+void setNul(void* inRefcon, int newNul) {
+    rsbn.selNul = clamp(0, newNul, 9);
 }
 
 float getDist(void* inRefcon) {
@@ -211,12 +215,16 @@ PLUGIN_API int XPluginStart(char *outName, char *outSig, char *outDesc)
     
     // And init the inspector
     gWindow = XPLMCreateWindow(
-						50, 800, 300, 600,
-						1,
-						inspectorWindowCB,
-						NULL,
-						NULL,
-						NULL);
+                       500,                 // inLeft,    
+                       800,                 // inTop,    
+                       300,                 // inRight,    
+                       600,                 // inBottom,    
+                       1,                   // inIsVisible,    
+                       inspectorWindowCB,   // inDrawCallback,    
+                       NULL,                // inKeyCallback,    
+                       NULL,                // inMouseCallback,    
+                       NULL);               // inRefcon);
+    
     return 1;
 }
 
