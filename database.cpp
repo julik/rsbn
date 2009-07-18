@@ -1,8 +1,9 @@
 #include "database.h"
 using namespace std;
 
-// RSBN reception distance is usually about 450 km
-#define MAX_RECEPTION_RANGE 450000.0
+// RSBN max reception distance
+// depends on inverse square falloff, according to the following law
+// max_km = 3.57 * sqrt(height_in_meters)
 #define NO_BEACONS_IN_RANGE 1
 
 Database::Database(char path[1024])
@@ -33,7 +34,7 @@ Beacon Database::findClosestByChannel(int strobe, int nul)
     Beacon bc;
     while( it != db.end() ) {
         Beacon bc = *it;
-        if( (strcmp(bc.channel, channelCode) == 0) && (bc.distanceFrom(acfXRef, acfYRef, acfZRef) < MAX_RECEPTION_RANGE)) {
+        if( (strcmp(bc.channel, channelCode) == 0) && bc.isInRangeOf(acfXRef, acfYRef, acfZRef)) {
             return bc;
         }
         it++;
@@ -48,8 +49,7 @@ int Database::size() {
 float Database::getDistance() {
     // Get the selected channels
     try {
-        Beacon bc = findClosestByChannel(selStrobe, selNul);
-        return bc.distanceFrom(acfXRef, acfYRef, acfZRef) / 1000;
+        return findClosestByChannel(selStrobe, selNul).distanceFrom(acfXRef, acfYRef, acfZRef);
     } catch (int e) {
         // No beacon found, swallow
         return 0.0;
@@ -67,19 +67,13 @@ float Database::getBearing() {
     }
 }
 
-void Database::currentBeaconName(char *name) {
+void Database::currentBeaconInfo(char *name) {
     // Get the selected channels
     try {
         Beacon bc = findClosestByChannel(selStrobe, selNul);
-        strcpy(name, "RSBN ");
-        strcpy(name, bc.name);
+        sprintf(name, "RSBN %s %s %sk",  bc.name, bc.callsign, bc.channel);
     } catch (int e) {
         // No beacon found, swallow
         strcpy(name, "<NO RECEPTION>");
     }
-}
-
-void Database::mainLoop() {
-    XPLMSetDataf(distRef,    getDistance());
-    XPLMSetDataf(bearingRef, getBearing());
 }

@@ -11,7 +11,7 @@ OSXC=-arch i386 -arch ppc -universal -mmacosx-version-min=10.4 -isysroot $(SDKRO
 OSXL=-arch i386 -arch ppc -syslibroot=$(SDKROOT)
 DEFS= -DAPL=1 -fPIC -m32 -fno-stack-protector -DXPLM200 -ggdb
 
-CXXFLAGS+=-Wall -I$(SDK)/CHeaders/XPLM -I$(SDK)/CHeaders/Widgets -I/usr/local/include $(DEFS) $(OSXC)
+CXXFLAGS+=-Wall -I$(SDK)/CHeaders/XPLM -I$(SDK)/CHeaders/Widgets $(DEFS) $(OSXC)
 
 # XPLM is loaded dynamically on OS X hence the -undefined option, -dynamiclib is used to get a .a file instead of a .bundle
 # The magiс incantation is -undefined warning -flat_namespace -dynamiclib -shared -rdynamic -nodefaultlibs,

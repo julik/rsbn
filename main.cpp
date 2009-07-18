@@ -4,12 +4,6 @@
 static Database rsbn = NULL;
 static XPLMWindowID gWindow = NULL;
 
-float rsbn_flCallback(float elapsedSinceLastCall, float timeElapsed,  int counter, void *refcon) {
-    rsbn.mainLoop();
-    return -1;
-}
-
-
 // Data access callbacks. All X-Plane callbacks for data sets/gets need a void refcon pointer at the start
 int getStrobe(void* inRefcon) {
     return rsbn.selStrobe;
@@ -35,6 +29,16 @@ float getBearing(void* inRefcon) {
     return rsbn.getBearing();
 }
 
+int getOverflight(void* inRefcon) {
+    // TODO
+    return 0;
+}
+
+int getOnline(void* inRefcon) {
+    // TODO
+    return 1;
+}
+
 void inspectorWindowCB( XPLMWindowID    inWindowID, void * inRefcon)
 {
 
@@ -54,7 +58,7 @@ void inspectorWindowCB( XPLMWindowID    inWindowID, void * inRefcon)
 	snprintf(c_dist, 64, "Dist %fkm", XPLMGetDataf(rsbn.distRef));
     
     char c_name[100];
-    rsbn.currentBeaconName(c_name);
+    rsbn.currentBeaconInfo(c_name);
     
 	XPLMDrawString(color, left + 5, top - 20,
 		(char*)(c_chan),  NULL, xplmFont_Basic);
@@ -117,7 +121,7 @@ PLUGIN_API int XPluginStart(char *outName, char *outSig, char *outDesc)
                                             NULL, NULL,                                    // Raw data accessors
                                             NULL, NULL);                                   // Refcons not used
                                         
-    // Init the datarefs for channels
+    // Dataref for distance, wired to a callback on the database
     rsbn.distRef = XPLMRegisterDataAccessor("rsbn/dist",
                                              xplmType_Float,                                // The types we support
                                              FALSE,                                             // Writable
@@ -129,7 +133,7 @@ PLUGIN_API int XPluginStart(char *outName, char *outSig, char *outDesc)
                                              NULL, NULL,                                    // Raw data accessors
                                              NULL, NULL);                                   // Refcons not used
 
-    // Init the datarefs for channels
+    // Dataref for bearing, wired to a callback on the database
     rsbn.bearingRef = XPLMRegisterDataAccessor("rsbn/bearing",
                                              xplmType_Float,                                // The types we support
                                              FALSE,                                             // Writable
@@ -140,13 +144,34 @@ PLUGIN_API int XPluginStart(char *outName, char *outSig, char *outDesc)
                                              NULL, NULL,                                    // Float array accessors
                                              NULL, NULL,                                    // Raw data accessors
                                              NULL, NULL);                                   // Refcons not used
-
+    
+    // Will contain 1 if the RSBN beacon is being overflown (is within the blind mushroom of non-reception)
+    rsbn.overflightRef = XPLMRegisterDataAccessor("rsbn/overflight",
+                                             xplmType_Int,                                // The types we support
+                                             FALSE,                                             // Writable
+                                             getOverflight, NULL,                              // Integer accessors
+                                             NULL, NULL,                                    // Float accessors
+                                             NULL, NULL,                                    // Doubles accessors
+                                             NULL, NULL,                                    // Int array accessors
+                                             NULL, NULL,                                    // Float array accessors
+                                             NULL, NULL,                                    // Raw data accessors
+                                             NULL, NULL);                                   // Refcons not used
+    
+    // Will contain 1 if the RSBN beacon set on channel is being received
+    rsbn.receptionRef = XPLMRegisterDataAccessor("rsbn/online",
+                                             xplmType_Int,                                // The types we support
+                                             FALSE,                                             // Writable
+                                             getOnline, NULL,                              // Integer accessors
+                                             NULL, NULL,                                    // Float accessors
+                                             NULL, NULL,                                    // Doubles accessors
+                                             NULL, NULL,                                    // Int array accessors
+                                             NULL, NULL,                                    // Float array accessors
+                                             NULL, NULL,                                    // Raw data accessors
+                                             NULL, NULL);                                   // Refcons not used
+    
+    
     // Preselect 10k
     rsbn.selStrobe = 1; rsbn.selNul = 0;
-    
-    // Register a callback
-    XPLMRegisterFlightLoopCallback(rsbn_flCallback, -1, NULL);
-    
     
     // And init the inspector
     gWindow = XPLMCreateWindow(

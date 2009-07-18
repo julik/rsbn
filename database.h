@@ -15,10 +15,15 @@ public:
     XPLMDataRef acfLatRef;
     XPLMDataRef acfLonRef;
     
+    // Information we GET
     XPLMDataRef strobeRef;
     XPLMDataRef nulRef;
+    
+    // information we SET
     XPLMDataRef distRef;
     XPLMDataRef bearingRef;
+    XPLMDataRef overflightRef;
+    XPLMDataRef receptionRef;
     
     // Selected strobe and nul, arrive from the dataref via callback
     int selStrobe;
@@ -37,9 +42,6 @@ public:
     // How many beacons are in the database?
     int size();
     
-    // Do I have to explain that too?
-    void mainLoop();
-    
     // Returns distance to aircraft in kilometers
     float getDistance();
     
@@ -47,5 +49,5 @@ public:
     float getBearing();
     
     // Get the name of the current beacon and write it into the passed char pointer
-    void currentBeaconName(char *name);
+    void currentBeaconInfo(char *name);
 };

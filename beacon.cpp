@@ -3,6 +3,9 @@
 
 using namespace std;
 
+#define RAD_TO_DEG 57.2957795
+#define PI 3.14159265
+
 // Boilerplate
 Beacon::Beacon() {
     cachedCoords = FALSE;
@@ -24,28 +27,42 @@ Beacon::Beacon(char *line)
     elev = atof(strtok(NULL, "\n"));
 }
 
-// Get the absolute distance to aircraft, in meters
+// Get the absolute distance to aircraft, in kilometers
 double Beacon::distanceFrom(XPLMDataRef acfXRef, XPLMDataRef acfYRef, XPLMDataRef acfZRef)
 {
     // Compute the beacon coordinates if none have been defined yet
     if(!cachedCoords) XPLMWorldToLocal(lat, lon, elev, &locX, &locY, &locZ);
     
 	// Compute absolute distance to acf, cartesian
-    double acfX = XPLMGetDataf(acfXRef);
-	double acfY = XPLMGetDataf(acfYRef);
-	double acfZ = XPLMGetDataf(acfZRef);
-
-	double relX = locX - acfX;
-	double relY = locY - acfY;
-	double relZ = locZ - acfZ;
+	double relX = locX - XPLMGetDataf(acfXRef);;
+	double relY = locY - XPLMGetDataf(acfYRef);
+	double relZ = locZ - XPLMGetDataf(acfZRef);
 
 	// XY
 	double distXYsq = pow(relX,2) + pow(relY,2);
 
 	// and distance, in meters. abs(1) for floats is not portable
 	double dist = fabs(sqrt( distXYsq + pow(relZ, 2) ));
-    return dist;
+    return dist / 1000;
 }
+
+// Is the beacon within the reception range?
+// RSBN max reception distance
+// depends on inverse square falloff, according to the following law
+// max_km = 3.57 * sqrt(height_in_meters
+// There is also a "mushroom" of inop whose radius is roughly eql to H
+bool Beacon::isInRangeOf(XPLMDataRef acfXRef, XPLMDataRef acfYRef, XPLMDataRef acfZRef) {
+    double maxDist = 3.57 * sqrt(XPLMGetDataf(acfYRef));
+    double dist = distanceFrom(acfXRef, acfYRef, acfZRef);
+    return ( dist < maxDist) && (dist > (XPLMGetDataf(acfYRef) / 1000));
+}
+
+// Check if we are overflying now
+bool Beacon::isOverflyingNow(XPLMDataRef acfXRef, XPLMDataRef acfYRef, XPLMDataRef acfZRef) {
+    double dist = distanceFrom(acfXRef, acfYRef, acfZRef);
+    return ( dist < (XPLMGetDataf(acfYRef) / 1000));
+}
+
 
 // Get the bearing to aircraft
 // http://www.movable-type.co.uk/scripts/latlong.html
@@ -54,12 +71,13 @@ double Beacon::bearingToAcf(XPLMDataRef acfLatRef, XPLMDataRef acfLonRef)
 	// Compute relative bearing to the beacon (Azimut), relative to the beacon true north. Since true north is used
 	// we can operate in lat/lon directly, but to do it we first need the aircraft position in lat/lon terms
 	// We compute FROM the beacon as opposed to TO, and then reciprocate the heading
-	double lat1 = lat;
-	double lon1 = lon;
+	double lat1 = lat * (PI/180);
+	double lon1 = lon * (PI/180);
     
-    double lat2 = XPLMGetDataf(acfLatRef);
-    double lon2 = XPLMGetDataf(acfLonRef);
+    double lat2 = XPLMGetDataf(acfLatRef) * (PI/180);
+    double lon2 = XPLMGetDataf(acfLonRef) * (PI/180);
     
-	double bearing = atan2(cos(lat1)*sin(lat2)-sin(lat1) * cos(lat2) * cos(lon2-lon1), sin(lon2-lon1) * cos(lat2));
-    return bearing;
+    // Radians to degrees
+	double brg = atan2(cos(lat1)*sin(lat2)-sin(lat1) * cos(lat2) * cos(lon2-lon1), sin(lon2-lon1) * cos(lat2)) / (PI/180);
+    return brg;
 }

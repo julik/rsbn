@@ -32,4 +32,13 @@ public:
     
     // Get the absolute distance to aircraft, in meters
     double Beacon::distanceFrom(XPLMDataRef acfX, XPLMDataRef acfY, XPLMDataRef acfZ);
+    
+    // Is the beacon within the reception range?
+    // RSBN max reception distance
+    // depends on inverse square falloff, according to the following law
+    // max_km = 3.57 * sqrt(height_in_meters
+    bool Beacon::isInRangeOf(XPLMDataRef acfX, XPLMDataRef acfY, XPLMDataRef acfZ);
+    
+    // Returns true if we are currently overflying this beacon
+    bool Beacon::isOverflyingNow(XPLMDataRef acfX, XPLMDataRef acfY, XPLMDataRef acfZ);
 };
