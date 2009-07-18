@@ -1,5 +1,6 @@
 #include "libs.h"
 #include "database.h"
+#define PLUGIN_SIGNATURE "com.julik.rsbn"
 
 static Database rsbn = NULL;
 static XPLMWindowID gWindow = NULL;
@@ -48,20 +49,14 @@ void inspectorWindowCB( XPLMWindowID    inWindowID, void * inRefcon)
 
 	XPLMDrawTranslucentDarkBox(left, top, right, bottom);
 
-	char c_chan[64];
-	snprintf(c_chan, 64, "Channel %d%dk", rsbn.selStrobe, rsbn.selNul);
-
 	char c_brg[64];
 	snprintf(c_brg, 64, "Bearing %f", XPLMGetDataf(rsbn.bearingRef));
 
 	char c_dist[64];
 	snprintf(c_dist, 64, "Dist %fkm", XPLMGetDataf(rsbn.distRef));
     
-    char c_name[100];
-    rsbn.currentBeaconInfo(c_name);
-    
-	XPLMDrawString(color, left + 5, top - 20,
-		(char*)(c_chan),  NULL, xplmFont_Basic);
+    char c_inf[100];
+    rsbn.currentBeaconInfo(c_inf);
 
 	XPLMDrawString(color, left + 5, top - 40,
 		(char*)(c_brg),  NULL, xplmFont_Basic);
@@ -70,24 +65,65 @@ void inspectorWindowCB( XPLMWindowID    inWindowID, void * inRefcon)
 		(char*)(c_dist), NULL, xplmFont_Basic);
 
 	XPLMDrawString(color, left + 5, top - 80,
-		(char*)(c_name), NULL, xplmFont_Basic);
+		(char*)(c_inf), NULL, xplmFont_Basic);
+}
+
+/// Convert a Mac-style path with double colons to a POSIX path. Google for "FSRef to POSIX path"
+// if you want to know the ass-backwards way of doing it properly, but we won't link to Carbon
+// only for this mmkay?
+static inline std::string carbonPathToPosixPath(const std::string &carbonPath)
+{
+    // Check if we are on a Mac first, could be also #ifdef APL
+    std::string sep = XPLMGetDirectorySeparator();
+    if(sep != std::string(":")) return carbonPath;
+    
+    // Prepend the "Volumes" superdir to the path
+    std::string posixPath = std::string("/Volumes/") + carbonPath;
+    // Replace dots with slashes
+    for(unsigned int i = 0; i < posixPath.length(); i++) {
+        if(posixPath[i] == ':') posixPath[i] = '/';
+    }
+    return posixPath;
+}
+
+// Overrides XPLMGetDirectorySeparator() to return the POSIX / instead of : for paths on OS X
+static inline std::string getDirSeparator()
+{
+    std::string sep = XPLMGetDirectorySeparator();
+    if(sep == std::string(":")) {
+        return std::string("/");
+    } else {
+        return sep;
+    }
+}
+
+void detectDatabasePath(char *dataPath, char *datafileName)
+{
+    char myPath[1024];
+    XPLMGetPluginInfo(XPLMGetMyID(), NULL, myPath, NULL, NULL);
+    XPLMExtractFileAndPath(myPath);
+    
+    string normalizedPath = carbonPathToPosixPath(string(myPath));
+    string datafilePathS = normalizedPath + getDirSeparator() + "data" + getDirSeparator() + datafileName;
+    
+    XPLMDebugString(("RSBN: Loading beacons from " + datafilePathS + "\n").c_str());
+    strcpy(dataPath, datafilePathS.c_str());
 }
 
 // start plugin
 PLUGIN_API int XPluginStart(char *outName, char *outSig, char *outDesc)
 {
     XPLMDebugString("RSBN: Init...\n");
-    const char *pluginSignature = "com.julik.rsbn";
     strcpy(outName, "X-Plane RSBN system");
-    strcpy(outSig, pluginSignature);
+    strcpy(outSig, PLUGIN_SIGNATURE);
     strcpy(outDesc, "RSBN beacons");
     
-    // TODO - just generate a gawddamn .cpp and use it inline
-    char dataPath[] = "/Users/julik/Desktop/X-Plane-Beta/Resources/plugins/rsbn/data/ussr.dat";
+    char dataPath[1024];
+    detectDatabasePath(dataPath, "ussr.dat");
     rsbn = Database(dataPath);
     
     char msg [256];
-    sprintf(msg, "RSBN: loaded %d beacons\n", rsbn.size());
+    sprintf(msg, "RSBN: loaded %d beacons from %s\n", rsbn.size(), "ussr.dat");
     XPLMDebugString(msg);
     
     // Grab the datarefs the plug needs for computation
