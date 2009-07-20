@@ -1,4 +1,6 @@
+#include "libs.h"
 #include "beacon.h"
+
 using namespace std;
 
 class   Database
@@ -8,26 +10,18 @@ public:
     // Injected from the datafile
     vector<Beacon> db;
     
-    // XP datarefs. Will be initialized when the database is created by the plugin
-    XPLMDataRef acfXRef;
-    XPLMDataRef acfYRef;
-    XPLMDataRef acfZRef;
-    XPLMDataRef acfLatRef;
-    XPLMDataRef acfLonRef;
-    
-    // Information we GET
-    XPLMDataRef strobeRef;
-    XPLMDataRef nulRef;
-    
-    // information we SET
-    XPLMDataRef distRef;
-    XPLMDataRef bearingRef;
-    XPLMDataRef overflightRef;
-    XPLMDataRef receptionRef;
-    
     // Selected strobe and nul, arrive from the dataref via callback
     int selStrobe;
     int selNul;
+    
+    bool isReceiving;
+    Beacon current;
+    
+    double curX;
+    double curY;
+    double curZ;
+    double curLat;
+    double curLon;
     
     // Boilerplate constructor
     Database();
@@ -36,8 +30,14 @@ public:
     // placed in the db vector
     Database(char path[1024]);
     
+    // Refills the DB with info from the file at path
+    void loadDataFrom(char path[1024]);
+    
     // Find the closest beacon at these coordinates
-    Beacon findClosestByChannel(int strobe, int nul);
+    Beacon findClosestByChannel();
+    
+    // Scane the beacons and select a beacon that works
+    void performLookup(double acfX, double acfY, double acfZ, double acfLat, double acfLon);
     
     // How many beacons are in the database?
     int size();
@@ -50,4 +50,8 @@ public:
     
     // Get the name of the current beacon and write it into the passed char pointer
     void currentBeaconInfo(char *name);
+    
+    // Returns TRUE if the linear distance from the aircraft is less than the aircraft's altitude + 2 km 
+    bool Database::isOverflyingNow();
+
 };

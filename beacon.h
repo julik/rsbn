@@ -28,17 +28,20 @@ public:
     // Get bearing FROM the beacon TO the aircraft ("azimut ot"), at the beacon's position in true degrees
     // If the onboard eqpt supports "azimut na" ("to" mode) it's the responsibility of the onboard set
     // to reciprocate the bearing
-    double Beacon::bearingToAcf(XPLMDataRef acfLat, XPLMDataRef acfLon);
+    double bearingToAcf(double acfLat, double acfLon);
     
     // Get the absolute distance to aircraft, in meters
-    double Beacon::distanceFrom(XPLMDataRef acfX, XPLMDataRef acfY, XPLMDataRef acfZ);
+    double distanceFrom(double acfX, double acfY, double acfZ);
     
     // Is the beacon within the reception range?
     // RSBN max reception distance
     // depends on inverse square falloff, according to the following law
     // max_km = 3.57 * sqrt(height_in_meters
-    bool Beacon::isInRangeOf(XPLMDataRef acfX, XPLMDataRef acfY, XPLMDataRef acfZ);
+    bool isInRangeOf(double acfX, double acfY, double acfZ);
     
     // Returns true if we are currently overflying this beacon
-    bool Beacon::isOverflyingNow(XPLMDataRef acfX, XPLMDataRef acfY, XPLMDataRef acfZ);
+    bool isOverflyingNow(double acfX, double acfY, double acfZ);
+    
+    // Translate the beacon coords into X-Plane coordinate system and cache XYZ coords
+    bool translateCoords();
 };

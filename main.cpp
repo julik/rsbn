@@ -1,8 +1,17 @@
-#include "libs.h"
-#include "database.h"
 #define PLUGIN_SIGNATURE "com.julik.rsbn"
+#define USSR_DATA (void*)1
+#define CIS_DATA (void*)2
 
-static Database rsbn = NULL;
+#include "libs.h"
+#include "utils.h"
+#include "gate.h"
+
+static Database rsbn;
+static Gate proxy;
+
+// static Cartographer map = NULL;
+static XPLMMenuID rsbnMenu;
+static int rsbnMenuItem = -1;
 static XPLMWindowID gWindow = NULL;
 
 inline int clamp(int min, int value, int max) {
@@ -10,41 +19,45 @@ inline int clamp(int min, int value, int max) {
 }
 
 // Data access callbacks. All X-Plane callbacks for data sets/gets need a void refcon pointer at the start
-int getStrobe(void* inRefcon) {
+static int getStrobe(void* inRefcon) {
     return rsbn.selStrobe;
 }
 
-void setStrobe(void* inRefcon, int newStrobe) {
+static void setStrobe(void* inRefcon, int newStrobe) {
     rsbn.selStrobe = clamp(0, newStrobe, 3);
 }
 
-int getNul(void* inRefcon) {
+static int getNul(void* inRefcon) {
     return rsbn.selNul;
 }
 
-void setNul(void* inRefcon, int newNul) {
+static void setNul(void* inRefcon, int newNul) {
     rsbn.selNul = clamp(0, newNul, 9);
 }
 
-float getDist(void* inRefcon) {
+static float getDist(void* inRefcon) {
     return rsbn.getDistance();
 }
 
-float getBearing(void* inRefcon) {
+static float getBearing(void* inRefcon) {
     return rsbn.getBearing();
 }
 
-int getOverflight(void* inRefcon) {
-    // TODO
-    return 0;
+static int getOverflight(void* inRefcon) {
+    return rsbn.isOverflyingNow();
 }
 
-int getOnline(void* inRefcon) {
-    // TODO
-    return 1;
+static int getOnline(void* inRefcon) {
+    return rsbn.isReceiving;
 }
 
-void inspectorWindowCB( XPLMWindowID    inWindowID, void * inRefcon)
+static float updateRsbn(float elapsedSinceLastCall, float elapsedTimeSinceLastFlightLoop,  int counter, void *refcon)
+{
+    proxy.update();
+    return -1;
+}
+
+static void inspectorWindowCB( XPLMWindowID    inWindowID, void * inRefcon)
 {
 
 	int		left, top, right, bottom;
@@ -54,10 +67,10 @@ void inspectorWindowCB( XPLMWindowID    inWindowID, void * inRefcon)
 	XPLMDrawTranslucentDarkBox(left, top, right, bottom);
 
 	char c_brg[64];
-	snprintf(c_brg, 64, "Bearing %f", XPLMGetDataf(rsbn.bearingRef));
+	snprintf(c_brg, 64,  "rsbn/bearing (deg) %f", getBearing(NULL));
 
 	char c_dist[64];
-	snprintf(c_dist, 64, "Dist %fkm", XPLMGetDataf(rsbn.distRef));
+	snprintf(c_dist, 64, "rsbn/distance (km) %f", getDist(NULL));
     
     char c_inf[100];
     rsbn.currentBeaconInfo(c_inf);
@@ -72,46 +85,35 @@ void inspectorWindowCB( XPLMWindowID    inWindowID, void * inRefcon)
 		(char*)(c_inf), NULL, xplmFont_Basic);
 }
 
-/// Convert a Mac-style path with double colons to a POSIX path. Google for "FSRef to POSIX path"
-// if you want to know the ass-backwards way of doing it properly, but we won't link to Carbon
-// only for this mmkay?
-static inline std::string carbonPathToPosixPath(const std::string &carbonPath)
+void rsbn_selectDataset(void* menuRef, void* selection)
 {
-    // Check if we are on a Mac first, could be also #ifdef APL
-    std::string sep = XPLMGetDirectorySeparator();
-    if(sep != std::string(":")) return carbonPath;
-    
-    // Prepend the "Volumes" superdir to the path
-    std::string posixPath = std::string("/Volumes/") + carbonPath;
-    // Replace dots with slashes
-    for(unsigned int i = 0; i < posixPath.length(); i++) {
-        if(posixPath[i] == ':') posixPath[i] = '/';
+    char dataPath[1024];
+    if (USSR_DATA == selection) {
+        detectDatabasePath(dataPath, "ussr.dat");
+        if (menuRef != NULL) XPLMCheckMenuItem(rsbnMenu, 1, xplm_Menu_Unchecked);
+        if (menuRef != NULL) XPLMCheckMenuItem(rsbnMenu, 0, xplm_Menu_Checked);
+    } else if (CIS_DATA == selection) {
+        detectDatabasePath(dataPath, "cis.dat");
+        if (menuRef != NULL) XPLMCheckMenuItem(rsbnMenu, 0, xplm_Menu_Unchecked);
+        if (menuRef != NULL) XPLMCheckMenuItem(rsbnMenu, 1, xplm_Menu_Checked);
     }
-    return posixPath;
+    rsbn.loadDataFrom(dataPath);
+    char msg[256];
+    sprintf(msg, "RSBN: loaded %d beacons\n", rsbn.size());
+    XPLMDebugString(msg);
 }
 
-// Overrides XPLMGetDirectorySeparator() to return the POSIX / instead of : for paths on OS X
-static inline std::string getDirSeparator()
+void rsbn_initMenu()
 {
-    std::string sep = XPLMGetDirectorySeparator();
-    if(sep == std::string(":")) {
-        return std::string("/");
-    } else {
-        return sep;
+    XPLMMenuID pluginsMenu = XPLMFindPluginsMenu();
+    
+    if (-1 == rsbnMenuItem) {
+        rsbnMenuItem = XPLMAppendMenuItem(pluginsMenu, "RSBN",  NULL, 1);
     }
-}
-
-void detectDatabasePath(char *dataPath, char *datafileName)
-{
-    char myPath[1024];
-    XPLMGetPluginInfo(XPLMGetMyID(), NULL, myPath, NULL, NULL);
-    XPLMExtractFileAndPath(myPath);
     
-    string normalizedPath = carbonPathToPosixPath(string(myPath));
-    string datafilePathS = normalizedPath + getDirSeparator() + "data" + getDirSeparator() + datafileName;
-    
-    XPLMDebugString(("RSBN: Loading beacons from " + datafilePathS + "\n").c_str());
-    strcpy(dataPath, datafilePathS.c_str());
+    rsbnMenu = XPLMCreateMenu("RSBN", pluginsMenu, rsbnMenuItem, rsbn_selectDataset, NULL);
+    XPLMAppendMenuItem(rsbnMenu, "USSR beacons", USSR_DATA, 1);
+    XPLMAppendMenuItem(rsbnMenu, "CIS beacons", CIS_DATA, 1);
 }
 
 // start plugin
@@ -122,21 +124,9 @@ PLUGIN_API int XPluginStart(char *outName, char *outSig, char *outDesc)
     strcpy(outSig, PLUGIN_SIGNATURE);
     strcpy(outDesc, "RSBN beacons");
     
-    char dataPath[1024];
-    detectDatabasePath(dataPath, "ussr.dat");
-    rsbn = Database(dataPath);
+    rsbn_initMenu();
+    rsbn_selectDataset(NULL, USSR_DATA);
     
-    char msg [256];
-    sprintf(msg, "RSBN: loaded %d beacons from %s\n", rsbn.size(), "ussr.dat");
-    XPLMDebugString(msg);
-    
-    // Grab the datarefs the plug needs for computation
-    rsbn.acfXRef = XPLMFindDataRef("sim/flightmodel/position/local_x");
-    rsbn.acfYRef = XPLMFindDataRef("sim/flightmodel/position/local_y");
-    rsbn.acfZRef = XPLMFindDataRef("sim/flightmodel/position/local_z");
-    rsbn.acfLatRef = XPLMFindDataRef("sim/flightmodel/position/longitude");
-    rsbn.acfLonRef = XPLMFindDataRef("sim/flightmodel/position/longitude");
-
     // Strobe
     XPLMRegisterDataAccessor("rsbn/strobe",
                                              xplmType_Int,                                  // The types we support
@@ -148,21 +138,21 @@ PLUGIN_API int XPluginStart(char *outName, char *outSig, char *outDesc)
                                              NULL, NULL,                                    // Float array accessors
                                              NULL, NULL,                                    // Raw data accessors
                                              NULL, NULL);                                   // Refcons not used
-
+    
     // Nul
     XPLMRegisterDataAccessor("rsbn/nul",
-                                            xplmType_Int,                                  // The types we support
-                                            TRUE,                                             // Writable
-                                            getNul, setNul,                                // Integer accessors
-                                            NULL, NULL,                                    // Float accessors
-                                            NULL, NULL,                                    // Doubles accessors
-                                            NULL, NULL,                                    // Int array accessors
-                                            NULL, NULL,                                    // Float array accessors
-                                            NULL, NULL,                                    // Raw data accessors
-                                            NULL, NULL);                                   // Refcons not used
+                                             xplmType_Int,                                  // The types we support
+                                             TRUE,                                             // Writable
+                                             getNul, setNul,                                // Integer accessors
+                                             NULL, NULL,                                    // Float accessors
+                                             NULL, NULL,                                    // Doubles accessors
+                                             NULL, NULL,                                    // Int array accessors
+                                             NULL, NULL,                                    // Float array accessors
+                                             NULL, NULL,                                    // Raw data accessors
+                                             NULL, NULL);                                   // Refcons not used
                                         
     // Dataref for distance, wired to a callback on the database
-    rsbn.distRef = XPLMRegisterDataAccessor("rsbn/dist",
+    XPLMRegisterDataAccessor("rsbn/dist",
                                              xplmType_Float,                                // The types we support
                                              FALSE,                                             // Writable
                                              NULL, NULL,                                 // Integer accessors
@@ -174,7 +164,7 @@ PLUGIN_API int XPluginStart(char *outName, char *outSig, char *outDesc)
                                              NULL, NULL);                                   // Refcons not used
 
     // Dataref for bearing, wired to a callback on the database
-    rsbn.bearingRef = XPLMRegisterDataAccessor("rsbn/bearing",
+    XPLMRegisterDataAccessor("rsbn/bearing",
                                              xplmType_Float,                                // The types we support
                                              FALSE,                                             // Writable
                                              NULL, NULL,                              // Integer accessors
@@ -186,7 +176,7 @@ PLUGIN_API int XPluginStart(char *outName, char *outSig, char *outDesc)
                                              NULL, NULL);                                   // Refcons not used
     
     // Will contain 1 if the RSBN beacon is being overflown (is within the blind mushroom of non-reception)
-    rsbn.overflightRef = XPLMRegisterDataAccessor("rsbn/overflight",
+    XPLMRegisterDataAccessor("rsbn/overflight",
                                              xplmType_Int,                                // The types we support
                                              FALSE,                                             // Writable
                                              getOverflight, NULL,                              // Integer accessors
@@ -198,7 +188,7 @@ PLUGIN_API int XPluginStart(char *outName, char *outSig, char *outDesc)
                                              NULL, NULL);                                   // Refcons not used
     
     // Will contain 1 if the RSBN beacon set on channel is being received
-    rsbn.receptionRef = XPLMRegisterDataAccessor("rsbn/online",
+    XPLMRegisterDataAccessor("rsbn/receiving",
                                              xplmType_Int,                                // The types we support
                                              FALSE,                                             // Writable
                                              getOnline, NULL,                              // Integer accessors
@@ -209,9 +199,12 @@ PLUGIN_API int XPluginStart(char *outName, char *outSig, char *outDesc)
                                              NULL, NULL,                                    // Raw data accessors
                                              NULL, NULL);                                   // Refcons not used
     
+    // Assign the gateway objects
+    proxy.db = &rsbn;   
+    proxy.attachDatarefs();
     
-    // Preselect 10k
-    rsbn.selStrobe = 1; rsbn.selNul = 0;
+    // Register the main callback
+    XPLMRegisterFlightLoopCallback(updateRsbn, -1, NULL);
     
     // And init the inspector
     gWindow = XPLMCreateWindow(
@@ -225,6 +218,7 @@ PLUGIN_API int XPluginStart(char *outName, char *outSig, char *outDesc)
                        NULL,                // inMouseCallback,    
                        NULL);               // inRefcon);
     
+    // XPLMRegisterDrawCallback( drawMapCB, xplm_Phase_LocalMap2D, 0, 0);
     return 1;
 }
 

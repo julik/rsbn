@@ -5,6 +5,7 @@
 #include <vector>
 #include <iostream>
 #include <fstream>
+#include <math.h>
 
 /// X-Plane boilerplate - handle cross platform differences
 #if IBM

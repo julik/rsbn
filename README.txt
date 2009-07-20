@@ -7,9 +7,9 @@ The plugin works without a UI. It will load the database of RSBN beacons, and de
 rsbn/strobe (int, writable) - the position of the "Strobe" switch, 0 to 9
 rsbn/nul (int, writable) - the position of the "Nul" switch, 0 to 9
 
-It makes the following datarefs available to any other plugin:
+It makes the following datarefs available:
 
 rsbn/online 		(int, readonly) - will contain 1 if the beacon is being received now
 rsbn/distance		(double, readonly) - linear distance to the beacon being received in kilometers
-rsbn/bearing		(double, readonly) - bearing at the beacon installation point to the aircraft
+rsbn/bearing		(double, readonly) - great circle bearing at the beacon installation point to the aircraft
 rsbn/overflight (int, readonly) - will contain 1 if the beacon is being overflown now

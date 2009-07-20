@@ -1,78 +1,90 @@
 #include "database.h"
 using namespace std;
 
-// RSBN max reception distance
-// depends on inverse square falloff, according to the following law
-// max_km = 3.57 * sqrt(height_in_meters)
-#define NO_BEACONS_IN_RANGE 1
+Database::Database() {}
 
 Database::Database(char path[1024])
 {
+    selStrobe = 1;
+    selNul = 0;
+    isReceiving = FALSE;
+    loadDataFrom(path);
+}
+
+void Database::loadDataFrom(char path[1024])
+{
     fstream inFile;
     inFile.open(path);
-    if (!inFile) {
-        char info[256];
-        sprintf(info, "RSBN: Unable to open %s\n", path);
-        XPLMDebugString(info);
-        return;
-    }
+    if (!inFile) return;
     
     char line[256];
+    db.clear();
     while (inFile.getline(line, sizeof(line)))  {
         db.push_back(Beacon(line));
     }
-    
     inFile.close();
 }
 
-Beacon Database::findClosestByChannel(int strobe, int nul)
+void Database::performLookup(double acfX, double acfY, double acfZ, double acfLat, double acfLon)
 {
+    curX = acfX;
+    curY = acfY;
+    curZ = acfZ;
+    curLat = acfLat;
+    curLon = acfLon;
+    
+    // TODO - opt - if the current beacon is in range keep it
+    
     char channelCode[3];
-    sprintf(channelCode, "%1d%1d", strobe, nul);
+    sprintf(channelCode, "%1d%1d", selStrobe, selNul);
     
     vector<Beacon>::iterator it =  db.begin();
     Beacon bc;
     while( it != db.end() ) {
         Beacon bc = *it;
-        if( (strcmp(bc.channel, channelCode) == 0) && bc.isInRangeOf(acfXRef, acfYRef, acfZRef)) {
-            return bc;
+        if( strcmp(bc.channel, channelCode) == 0) { /* && bc.isInRangeOf(acfX, acfY, acfZ)) { */
+            current = bc;
+            isReceiving = true;
+            return;
         }
         it++;
     }
-    throw NO_BEACONS_IN_RANGE;
+    isReceiving = false;
 }
 
-int Database::size() {
+int Database::size()
+{
     return db.size();
 }
 
-float Database::getDistance() {
+float Database::getDistance()
+{
     // Get the selected channels
-    try {
-        return findClosestByChannel(selStrobe, selNul).distanceFrom(acfXRef, acfYRef, acfZRef);
-    } catch (int e) {
-        // No beacon found, swallow
+    return (isReceiving) ? current.distanceFrom(curX, curY, curZ) : 0.0;
+}
+
+bool Database::isOverflyingNow()
+{
+    return (isReceiving) && (getDistance() < curY);
+}
+
+// TODO refactor
+float Database::getBearing()
+{
+    // Get the selected channels
+    if(isReceiving) {
+        return current.bearingToAcf(curLat, curLon);
+    } else  {
         return 0.0;
     }
 }
 
-float Database::getBearing() {
+void Database::currentBeaconInfo(char *name)
+{
     // Get the selected channels
-    try {
-        Beacon bc = findClosestByChannel(selStrobe, selNul);
-        return bc.bearingToAcf(acfLatRef, acfLonRef);
-    } catch (int e) {
-        // No beacon found, swallow
-        return 0.0;
-    }
-}
-
-void Database::currentBeaconInfo(char *name) {
-    // Get the selected channels
-    try {
-        Beacon bc = findClosestByChannel(selStrobe, selNul);
-        sprintf(name, "RSBN %s %s %sk",  bc.name, bc.callsign, bc.channel);
-    } catch (int e) {
+    if (isReceiving) {
+        sprintf(name, "RSBN %s %s %sk",  current.name, current.callsign, current.channel);
+    } else {
         // No beacon found, swallow
         strcpy(name, "<NO RECEPTION>");
     }
