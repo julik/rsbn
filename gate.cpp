@@ -1,9 +1,18 @@
 #include "gate.h"
 #include "libs.h"
 
+Gate::Gate()
+{
+    db = NULL;
+}
+
 void Gate::update()
 {
-   (*(db)).performLookup(XPLMGetDataf(acfXRef), XPLMGetDataf(acfYRef), XPLMGetDataf(acfZRef), XPLMGetDataf(acfLatRef), XPLMGetDataf(acfLonRef));
+   if (db == NULL) return;
+    
+   (*db).setPositionAndFindNearest(
+       XPLMGetDataf(acfXRef), XPLMGetDataf(acfYRef), XPLMGetDataf(acfZRef), 
+       XPLMGetDataf(acfLatRef), XPLMGetDataf(acfLonRef));
 }
 
 void Gate::attachDatarefs()

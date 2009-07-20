@@ -14,17 +14,12 @@ public:
     int selStrobe;
     int selNul;
     
-    bool isReceiving;
-    Beacon current;
-    
-    double curX;
-    double curY;
-    double curZ;
-    double curLat;
-    double curLon;
+    Beacon * current;
     
     // Boilerplate constructor
     Database();
+
+    bool isReceiving();
     
     // Make a database of beacons reading them from file at path. Beacons will be
     // placed in the db vector
@@ -36,8 +31,8 @@ public:
     // Find the closest beacon at these coordinates
     Beacon findClosestByChannel();
     
-    // Scane the beacons and select a beacon that works
-    void performLookup(double acfX, double acfY, double acfZ, double acfLat, double acfLon);
+    // Scan the beacons and select a beacon that works
+    void setPositionAndFindNearest(double acfX, double acfY, double acfZ, double acfLat, double acfLon);
     
     // How many beacons are in the database?
     int size();
@@ -54,4 +49,11 @@ public:
     // Returns TRUE if the linear distance from the aircraft is less than the aircraft's altitude + 2 km 
     bool Database::isOverflyingNow();
 
+private:
+    
+    double curX;
+    double curY;
+    double curZ;
+    double curLat;
+    double curLon;
 };

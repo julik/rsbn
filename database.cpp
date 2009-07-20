@@ -1,13 +1,17 @@
 #include "database.h"
 using namespace std;
 
-Database::Database() {}
+Database::Database() {
+    selStrobe = 1;
+    selNul = 0;
+    current = NULL;
+}
 
 Database::Database(char path[1024])
 {
     selStrobe = 1;
     selNul = 0;
-    isReceiving = FALSE;
+    current = NULL;
     loadDataFrom(path);
 }
 
@@ -25,7 +29,7 @@ void Database::loadDataFrom(char path[1024])
     inFile.close();
 }
 
-void Database::performLookup(double acfX, double acfY, double acfZ, double acfLat, double acfLon)
+void Database::setPositionAndFindNearest(double acfX, double acfY, double acfZ, double acfLat, double acfLon)
 {
     curX = acfX;
     curY = acfY;
@@ -33,23 +37,22 @@ void Database::performLookup(double acfX, double acfY, double acfZ, double acfLa
     curLat = acfLat;
     curLon = acfLon;
     
-    // TODO - opt - if the current beacon is in range keep it
+    // TODO - optimize - if the current beacon is in range keep it
     
     char channelCode[3];
     sprintf(channelCode, "%1d%1d", selStrobe, selNul);
     
+    std::cout << "Validating nearest beacon for " << channelCode;
+    
     vector<Beacon>::iterator it =  db.begin();
-    Beacon bc;
     while( it != db.end() ) {
         Beacon bc = *it;
-        if( strcmp(bc.channel, channelCode) == 0) { /* && bc.isInRangeOf(acfX, acfY, acfZ)) { */
-            current = bc;
-            isReceiving = true;
-            return;
+        if(strcmp(bc.channel, channelCode) == 0){
+            std::cout << "Beacon found on " << channelCode << "k";
+            current = &bc; return;
         }
         it++;
     }
-    isReceiving = false;
 }
 
 int Database::size()
@@ -60,20 +63,25 @@ int Database::size()
 float Database::getDistance()
 {
     // Get the selected channels
-    return (isReceiving) ? current.distanceFrom(curX, curY, curZ) : 0.0;
+    return (current != NULL) ? (*current).distanceFrom(curX, curY, curZ) : 0.0;
 }
 
 bool Database::isOverflyingNow()
 {
-    return (isReceiving) && (getDistance() < curY);
+    return (current != NULL) && (getDistance() < curY);
+}
+
+bool Database::isReceiving()
+{
+    return (current != NULL);
 }
 
 // TODO refactor
 float Database::getBearing()
 {
     // Get the selected channels
-    if(isReceiving) {
-        return current.bearingToAcf(curLat, curLon);
+    if(current != NULL) {
+        return (*current).bearingToAcf(curLat, curLon);
     } else  {
         return 0.0;
     }
@@ -82,8 +90,8 @@ float Database::getBearing()
 void Database::currentBeaconInfo(char *name)
 {
     // Get the selected channels
-    if (isReceiving) {
-        sprintf(name, "RSBN %s %s %sk",  current.name, current.callsign, current.channel);
+    if (current != NULL) {
+        sprintf(name, "RSBN %s %s %sk",  (*current).name, (*current).callsign, (*current).channel);
     } else {
         // No beacon found, swallow
         strcpy(name, "<NO RECEPTION>");

@@ -47,8 +47,8 @@ static int getOverflight(void* inRefcon) {
     return rsbn.isOverflyingNow();
 }
 
-static int getOnline(void* inRefcon) {
-    return rsbn.isReceiving;
+static int getReceiving(void* inRefcon) {
+    return rsbn.isReceiving();
 }
 
 static float updateRsbn(float elapsedSinceLastCall, float elapsedTimeSinceLastFlightLoop,  int counter, void *refcon)
@@ -71,18 +71,36 @@ static void inspectorWindowCB( XPLMWindowID    inWindowID, void * inRefcon)
 
 	char c_dist[64];
 	snprintf(c_dist, 64, "rsbn/distance (km) %f", getDist(NULL));
+
+	char c_ovr[64];
+	snprintf(c_ovr, 64, "rsbn/overflight %1d", getOverflight(NULL));
+
+	char c_reception[64];
+	snprintf(c_reception, 64, "rsbn/receiving %1d", getReceiving(NULL));
+
+	char c_sn[64];
+	snprintf(c_sn, 64, "rsbn/strobe and rsbn/nul %1d %1d", getStrobe(NULL), getNul(NULL));
     
     char c_inf[100];
     rsbn.currentBeaconInfo(c_inf);
 
 	XPLMDrawString(color, left + 5, top - 40,
-		(char*)(c_brg),  NULL, xplmFont_Basic);
+		c_brg,  NULL, xplmFont_Basic);
+
+	XPLMDrawString(color, left + 5, top - 50,
+		c_dist, NULL, xplmFont_Basic);
 
 	XPLMDrawString(color, left + 5, top - 60,
-		(char*)(c_dist), NULL, xplmFont_Basic);
+		c_inf, NULL, xplmFont_Basic);
+
+	XPLMDrawString(color, left + 5, top - 70,
+		c_ovr, NULL, xplmFont_Basic);
 
 	XPLMDrawString(color, left + 5, top - 80,
-		(char*)(c_inf), NULL, xplmFont_Basic);
+		c_reception, NULL, xplmFont_Basic);
+
+	XPLMDrawString(color, left + 5, top - 90,
+		c_sn, NULL, xplmFont_Basic);
 }
 
 void rsbn_selectDataset(void* menuRef, void* selection)
@@ -191,7 +209,7 @@ PLUGIN_API int XPluginStart(char *outName, char *outSig, char *outDesc)
     XPLMRegisterDataAccessor("rsbn/receiving",
                                              xplmType_Int,                                // The types we support
                                              FALSE,                                             // Writable
-                                             getOnline, NULL,                              // Integer accessors
+                                             getReceiving, NULL,                              // Integer accessors
                                              NULL, NULL,                                    // Float accessors
                                              NULL, NULL,                                    // Doubles accessors
                                              NULL, NULL,                                    // Int array accessors

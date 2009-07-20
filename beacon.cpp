@@ -68,7 +68,7 @@ double Beacon::distanceFrom(double acfX, double acfY, double acfZ)
 // max_km = 3.57 * sqrt(height_of_acft_in_meters)
 // There is also a "mushroom" of inop whose radius is roughly eql to H
 bool Beacon::isInRangeOf(double acfX, double acfY, double acfZ) {
-    double maxDist = 3.57 * sqrt(acfY);
+    double maxDist = 400; // 3.57 * sqrt(acfY);
     double dist = distanceFrom(acfX, acfY, acfZ);
     return ( dist < maxDist); // NOT yet -  && (dist > (XPLMGetDataf(acfYRef) / 1000));
 }

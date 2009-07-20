@@ -1,5 +1,5 @@
 SDK=/opt/x-plane/SDK
-
+PLUGINS=/Users/julik/Desktop/X-Plane-Beta/Resources/plugins/rsbn/
 TARGET=mac.xpl
 HEADERS=$(wildcard *.h)
 SOURCES=$(wildcard *.cpp)
@@ -32,5 +32,8 @@ clean:
 
 install: $(TARGET)
 	cp -f $(TARGET) $(PLUGINS)
+	mkdir -p $(PLUGINS)/data
+	cp -f data/ussr.dat $(PLUGINS)/data/
+	cp -f data/cis.dat $(PLUGINS)/data/
 
 

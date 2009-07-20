@@ -17,6 +17,8 @@ public:
     XPLMDataRef localMapRight;
     XPLMDataRef localMapTop;
     
+    Gate();
+    
     void update();
     
     void attachDatarefs();
