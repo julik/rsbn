@@ -15,7 +15,7 @@ static int rsbnMenuItem = -1;
 static XPLMWindowID gWindow = NULL;
 
 inline int clamp(int min, int value, int max) {
-    return value > max ? max : (value < min ? min : value);
+    return value >= max ? max : (value <= min ? min : value);
 }
 
 // Data access callbacks. All X-Plane callbacks for data sets/gets need a void refcon pointer at the start
@@ -24,7 +24,7 @@ static int getStrobe(void* inRefcon) {
 }
 
 static void setStrobe(void* inRefcon, int newStrobe) {
-    rsbn.selStrobe = clamp(0, newStrobe, 3);
+    rsbn.selStrobe = clamp(0, newStrobe, 4);
 }
 
 static int getNul(void* inRefcon) {
@@ -81,8 +81,8 @@ static void inspectorWindowCB( XPLMWindowID    inWindowID, void * inRefcon)
 	char c_sn[64];
 	snprintf(c_sn, 64, "rsbn/strobe and rsbn/nul %1d %1d", getStrobe(NULL), getNul(NULL));
     
-    char c_inf[100];
-    rsbn.currentBeaconInfo(c_inf);
+    char c_inf[128];
+    rsbn.tunedBeaconInfo(c_inf);
 
 	XPLMDrawString(color, left + 5, top - 40,
 		c_brg,  NULL, xplmFont_Basic);

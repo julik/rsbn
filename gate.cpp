@@ -12,7 +12,8 @@ void Gate::update()
     
    (*db).setPositionAndFindNearest(
        XPLMGetDataf(acfXRef), XPLMGetDataf(acfYRef), XPLMGetDataf(acfZRef), 
-       XPLMGetDataf(acfLatRef), XPLMGetDataf(acfLonRef));
+       XPLMGetDataf(acfLatRef), XPLMGetDataf(acfLonRef)
+    );
 }
 
 void Gate::attachDatarefs()
@@ -22,7 +23,6 @@ void Gate::attachDatarefs()
     acfZRef = XPLMFindDataRef("sim/flightmodel/position/local_z");
     acfLatRef = XPLMFindDataRef("sim/flightmodel/position/longitude");
     acfLonRef = XPLMFindDataRef("sim/flightmodel/position/longitude");
-    
     localMapTop = XPLMFindDataRef("sim/graphics/view/local_map_t");
     localMapLeft = XPLMFindDataRef("sim/graphics/view/local_map_l");
     localMapBottom = XPLMFindDataRef("sim/graphics/view/local_map_b");

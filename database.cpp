@@ -4,14 +4,14 @@ using namespace std;
 Database::Database() {
     selStrobe = 1;
     selNul = 0;
-    current = NULL;
+    tunedBc = NULL;
 }
 
 Database::Database(char path[1024])
 {
     selStrobe = 1;
     selNul = 0;
-    current = NULL;
+    tunedBc = NULL;
     loadDataFrom(path);
 }
 
@@ -37,22 +37,22 @@ void Database::setPositionAndFindNearest(double acfX, double acfY, double acfZ, 
     curLat = acfLat;
     curLon = acfLon;
     
-    // TODO - optimize - if the current beacon is in range keep it
+    // TODO - optimize - if the tunedBc beacon is in range keep it
     
     char channelCode[3];
     sprintf(channelCode, "%1d%1d", selStrobe, selNul);
-    
-    std::cout << "Validating nearest beacon for " << channelCode;
     
     vector<Beacon>::iterator it =  db.begin();
     while( it != db.end() ) {
         Beacon bc = *it;
         if(strcmp(bc.channel, channelCode) == 0){
-            std::cout << "Beacon found on " << channelCode << "k";
-            current = &bc; return;
+            tunedBc = &bc; return;
         }
         it++;
     }
+    
+    // None found if we got here
+    tunedBc = NULL;
 }
 
 int Database::size()
@@ -63,35 +63,35 @@ int Database::size()
 float Database::getDistance()
 {
     // Get the selected channels
-    return (current != NULL) ? (*current).distanceFrom(curX, curY, curZ) : 0.0;
+    return (tunedBc != NULL) ? (*tunedBc).distanceFrom(curX, curY, curZ) : 0.0;
 }
 
 bool Database::isOverflyingNow()
 {
-    return (current != NULL) && (getDistance() < curY);
+    return (tunedBc != NULL) && (getDistance() < curY);
 }
 
 bool Database::isReceiving()
 {
-    return (current != NULL);
+    return (tunedBc != NULL);
 }
 
 // TODO refactor
 float Database::getBearing()
 {
     // Get the selected channels
-    if(current != NULL) {
-        return (*current).bearingToAcf(curLat, curLon);
+    if(tunedBc != NULL) {
+        return (*tunedBc).bearingToAcf(curLat, curLon);
     } else  {
         return 0.0;
     }
 }
 
-void Database::currentBeaconInfo(char *name)
+void Database::tunedBeaconInfo(char *name)
 {
     // Get the selected channels
-    if (current != NULL) {
-        sprintf(name, "RSBN %s %s %sk",  (*current).name, (*current).callsign, (*current).channel);
+    if (tunedBc != NULL) {
+        sprintf(name, "%sk %s",  (*tunedBc).channel, (*tunedBc).name);
     } else {
         // No beacon found, swallow
         strcpy(name, "<NO RECEPTION>");

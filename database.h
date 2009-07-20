@@ -14,7 +14,7 @@ public:
     int selStrobe;
     int selNul;
     
-    Beacon * current;
+    Beacon * tunedBc;
     
     // Boilerplate constructor
     Database();
@@ -32,7 +32,7 @@ public:
     Beacon findClosestByChannel();
     
     // Scan the beacons and select a beacon that works
-    void setPositionAndFindNearest(double acfX, double acfY, double acfZ, double acfLat, double acfLon);
+    void setPositionAndFindNearest(float acfX, float acfY, float acfZ, float acfLat, float acfLon);
     
     // How many beacons are in the database?
     int size();
@@ -44,7 +44,7 @@ public:
     float getBearing();
     
     // Get the name of the current beacon and write it into the passed char pointer
-    void currentBeaconInfo(char *name);
+    void tunedBeaconInfo(char *name);
     
     // Returns TRUE if the linear distance from the aircraft is less than the aircraft's altitude + 2 km 
     bool Database::isOverflyingNow();

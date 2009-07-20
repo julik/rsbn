@@ -43,5 +43,5 @@ public:
     bool isOverflyingNow(double acfX, double acfY, double acfZ);
     
     // Translate the beacon coords into X-Plane coordinate system and cache XYZ coords
-    bool translateCoords();
+    void translateCoords();
 };
