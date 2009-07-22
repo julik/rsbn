@@ -32,29 +32,31 @@ Beacon::Beacon(char *line)
     lat =  atof(strtok(NULL, "|"));
     lon =  atof(strtok(NULL, "|"));
     elev = atof(strtok(NULL, "\n"));
+    std::cout << lat << "\n";
+    std::cout << lon << "\n";
+    std::cout << name << "\n";
 }
 
 // Get the absolute distance to aircraft, in kilometers
 float Beacon::distanceFrom(double acfX, double acfY, double acfZ)
 {
-    
     if(!cachedCoords) {
-        // Compute the beacon coordinates if none have been defined yet
-        XPLMWorldToLocal(lat, lon, elev, &locX, &locY, &locZ);
-        cachedCoords = true;
+    	// Compute the beacon coordinates if none have been defined yet
+    	XPLMWorldToLocal(lat, lon, elev, &locX, &locY, &locZ);
+    	cachedCoords = true;
     }
 
-	// Compute absolute distance to acf, cartesian
+    // Compute absolute distance to acf, cartesian
     double relX = acfX - locZ;
     double relY = acfY - locY;
     double relZ = acfZ - locZ;
 
     // XY
     double distXYsq = pow(relX,2) + pow(relY,2);
-    
+
     // and distance, in meters. abs(1) for doubles is not portable
-    double dist = sqrt(distXYsq + pow(relZ, 2));
-    
+    double dist = sqrt(distXYsq + pow(relZ, 2)) / 1000;
+
     return (float)dist;
 }
 
@@ -65,7 +67,7 @@ float Beacon::distanceFrom(double acfX, double acfY, double acfZ)
 // There is also a "mushroom" of inop whose radius is roughly eql to H
 bool Beacon::isInRangeOf(double acfX, double acfY, double acfZ) {
     double maxDist = MAX_DISTANCE_KM; // 3.57 * sqrt(acfY);
-    double dist = distanceFrom(acfX, acfY, acfZ);
+    double dist = 100; //distanceFrom(acfX, acfY, acfZ);
     return (dist < maxDist); // NOT yet -  && (dist > (XPLMGetDataf(acfYRef) / 1000));
 }
 

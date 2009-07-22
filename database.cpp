@@ -44,12 +44,12 @@ void Database::setPositionAndFindNearest(double acfX, double acfY,
     
     // Optimize - if the tunedBc beacon is already found and preselected keep it,
     // don't alloc any iterators
-    if (isTuned && strcmp(tunedBc.channel, channelCode) == 0) return;
+    if (isTuned && strcmp(tunedBc.channel, channelCode) == 0 && tunedBc.isInRangeOf(acfX, acfY, acfZ)) return;
     
     vector<Beacon>::iterator it =  db.begin();
     while( it != db.end() ) {
         Beacon bc = *it;
-        if(strcmp(bc.channel, channelCode) == 0) {
+        if(strcmp(bc.channel, channelCode) == 0 && tunedBc.isInRangeOf(acfX, acfY, acfZ)) {
             isTuned = true;
             tunedBc = bc;
             return;
