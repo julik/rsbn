@@ -57,6 +57,17 @@ static float updateRsbn(float elapsedSinceLastCall, float elapsedTimeSinceLastFl
     return -1;
 }
 
+/*
+static int drawMapCB(XPLMDrawingPhase inPhase, int inIsBefore, void *inRefcon)
+{
+    if(inPhase != xplm_Phase_LocalMap3D) return 1;
+    
+    proxy.drawToMap();
+    return 1;
+}
+
+ */
+
 static void inspectorWindowCB( XPLMWindowID    inWindowID, void * inRefcon)
 {
 
@@ -91,7 +102,7 @@ static void inspectorWindowCB( XPLMWindowID    inWindowID, void * inRefcon)
 		c_dist, NULL, xplmFont_Basic);
 
 	XPLMDrawString(color, left + 5, top - 60,
-		c_inf, NULL, xplmFont_Basic);
+		c_sn, NULL, xplmFont_Basic);
 
 	XPLMDrawString(color, left + 5, top - 70,
 		c_ovr, NULL, xplmFont_Basic);
@@ -100,7 +111,7 @@ static void inspectorWindowCB( XPLMWindowID    inWindowID, void * inRefcon)
 		c_reception, NULL, xplmFont_Basic);
 
 	XPLMDrawString(color, left + 5, top - 90,
-		c_sn, NULL, xplmFont_Basic);
+		c_inf, NULL, xplmFont_Basic);
 }
 
 void rsbn_selectDataset(void* menuRef, void* selection)
@@ -147,75 +158,75 @@ PLUGIN_API int XPluginStart(char *outName, char *outSig, char *outDesc)
     
     // Strobe
     XPLMRegisterDataAccessor("rsbn/strobe",
-                                             xplmType_Int,                                  // The types we support
-                                             TRUE,                                             // Writable
-                                             getStrobe, setStrobe,                          // Integer accessors
-                                             NULL, NULL,                                    // Float accessors
-                                             NULL, NULL,                                    // Doubles accessors
-                                             NULL, NULL,                                    // Int array accessors
-                                             NULL, NULL,                                    // Float array accessors
-                                             NULL, NULL,                                    // Raw data accessors
-                                             NULL, NULL);                                   // Refcons not used
+            xplmType_Int,                                  // The types we support
+            TRUE,                                          // Writable
+            getStrobe, setStrobe,                          // Integer accessors
+            NULL, NULL,                                    // Float accessors
+            NULL, NULL,                                    // Doubles accessors
+            NULL, NULL,                                    // Int array accessors
+            NULL, NULL,                                    // Float array accessors
+            NULL, NULL,                                    // Raw data accessors
+            NULL, NULL);                                   // Refcons not used
     
     // Nul
     XPLMRegisterDataAccessor("rsbn/nul",
-                                             xplmType_Int,                                  // The types we support
-                                             TRUE,                                             // Writable
-                                             getNul, setNul,                                // Integer accessors
-                                             NULL, NULL,                                    // Float accessors
-                                             NULL, NULL,                                    // Doubles accessors
-                                             NULL, NULL,                                    // Int array accessors
-                                             NULL, NULL,                                    // Float array accessors
-                                             NULL, NULL,                                    // Raw data accessors
-                                             NULL, NULL);                                   // Refcons not used
+            xplmType_Int,                                  // The types we support
+            TRUE,                                             // Writable
+            getNul, setNul,                                // Integer accessors
+            NULL, NULL,                                    // Float accessors
+            NULL, NULL,                                    // Doubles accessors
+            NULL, NULL,                                    // Int array accessors
+            NULL, NULL,                                    // Float array accessors
+            NULL, NULL,                                    // Raw data accessors
+            NULL, NULL);                                   // Refcons not used
                                         
     // Dataref for distance, wired to a callback on the database
     XPLMRegisterDataAccessor("rsbn/dist",
-                                             xplmType_Float,                                // The types we support
-                                             FALSE,                                             // Writable
-                                             NULL, NULL,                                 // Integer accessors
-                                             getDist, NULL,                                    // Float accessors
-                                             NULL, NULL,                                    // Doubles accessors
-                                             NULL, NULL,                                    // Int array accessors
-                                             NULL, NULL,                                    // Float array accessors
-                                             NULL, NULL,                                    // Raw data accessors
-                                             NULL, NULL);                                   // Refcons not used
+            xplmType_Float,                                // The types we support
+            FALSE,                                             // Writable
+            NULL, NULL,                                 // Integer accessors
+            getDist, NULL,                                    // Float accessors
+            NULL, NULL,                                    // Doubles accessors
+            NULL, NULL,                                    // Int array accessors
+            NULL, NULL,                                    // Float array accessors
+            NULL, NULL,                                    // Raw data accessors
+            NULL, NULL);                                   // Refcons not used
 
     // Dataref for bearing, wired to a callback on the database
     XPLMRegisterDataAccessor("rsbn/bearing",
-                                             xplmType_Float,                                // The types we support
-                                             FALSE,                                             // Writable
-                                             NULL, NULL,                              // Integer accessors
-                                             getBearing, NULL,                                    // Float accessors
-                                             NULL, NULL,                                    // Doubles accessors
-                                             NULL, NULL,                                    // Int array accessors
-                                             NULL, NULL,                                    // Float array accessors
-                                             NULL, NULL,                                    // Raw data accessors
-                                             NULL, NULL);                                   // Refcons not used
+            xplmType_Float,                                // The types we support
+            FALSE,                                             // Writable
+            NULL, NULL,                              // Integer accessors
+            getBearing, NULL,                                    // Float accessors
+            NULL, NULL,                                    // Doubles accessors
+            NULL, NULL,                                    // Int array accessors
+            NULL, NULL,                                    // Float array accessors
+            NULL, NULL,                                    // Raw data accessors
+            NULL, NULL);                                   // Refcons not used
     
     // Will contain 1 if the RSBN beacon is being overflown (is within the blind mushroom of non-reception)
     XPLMRegisterDataAccessor("rsbn/overflight",
-                                             xplmType_Int,                                // The types we support
-                                             FALSE,                                             // Writable
-                                             getOverflight, NULL,                              // Integer accessors
-                                             NULL, NULL,                                    // Float accessors
-                                             NULL, NULL,                                    // Doubles accessors
-                                             NULL, NULL,                                    // Int array accessors
-                                             NULL, NULL,                                    // Float array accessors
-                                             NULL, NULL,                                    // Raw data accessors
-                                             NULL, NULL);                                   // Refcons not used
+            xplmType_Int,                                // The types we support
+            FALSE,                                             // Writable
+            getOverflight, NULL,                              // Integer accessors
+            NULL, NULL,                                    // Float accessors
+            NULL, NULL,                                    // Doubles accessors
+            NULL, NULL,                                    // Int array accessors
+            NULL, NULL,                                    // Float array accessors
+            NULL, NULL,                                    // Raw data accessors
+            NULL, NULL);                                   // Refcons not used
     
     // Will contain 1 if the RSBN beacon set on channel is being received
     XPLMRegisterDataAccessor("rsbn/receiving",
-                                             xplmType_Int,                                // The types we support
-                                             FALSE,                                             // Writable
-                                             getReceiving, NULL,                              // Integer accessors
-                                             NULL, NULL,                                    // Float accessors
-                                             NULL, NULL,                                    // Doubles accessors
-                                             NULL, NULL,                                    // Int array accessors
-                                             NULL, NULL,                                    // Float array accessors
-                                             NULL, NULL,                                    // Raw data accessors
-                                             NULL, NULL);                                   // Refcons not used
+            xplmType_Int,           // The types we support
+            FALSE,                  // Writable
+            getReceiving, NULL,     // Integer accessors
+            NULL, NULL,             // Float accessors
+            NULL, NULL,             // Doubles accessors
+            NULL, NULL,             // Int array accessors
+            NULL, NULL,             // Float array accessors
+            NULL, NULL,             // Raw data accessors
+            NULL, NULL);            // Refcons not used
     
     // Assign the gateway objects
     proxy.db = &rsbn;   
@@ -236,7 +247,7 @@ PLUGIN_API int XPluginStart(char *outName, char *outSig, char *outDesc)
                        NULL,                // inMouseCallback,    
                        NULL);               // inRefcon);
     
-    // XPLMRegisterDrawCallback( drawMapCB, xplm_Phase_LocalMap2D, 0, 0);
+    // XPLMRegisterDrawCallback( drawMapCB, xplm_Phase_LocalMap3D, 0, NULL);
     return 1;
 }
 
@@ -260,6 +271,7 @@ PLUGIN_API int XPluginEnable(void)
 }
 
 
-PLUGIN_API void XPluginReceiveMessage(XPLMPluginID fromWhom, long msg, void *param)
+PLUGIN_API void XPluginReceiveMessage(XPLMPluginID inFrom, long inMsg, void *inParam)
 {
+    
 }

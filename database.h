@@ -13,8 +13,9 @@ public:
     // Selected strobe and nul, arrive from the dataref via callback
     int selStrobe;
     int selNul;
+    bool isTuned;
     
-    Beacon * tunedBc;
+    Beacon tunedBc;
     
     // Boilerplate constructor
     Database();
@@ -32,7 +33,7 @@ public:
     Beacon findClosestByChannel();
     
     // Scan the beacons and select a beacon that works
-    void setPositionAndFindNearest(float acfX, float acfY, float acfZ, float acfLat, float acfLon);
+    void setPositionAndFindNearest(double acfX, double acfY, double acfZ, double acfLat, double acfLon);
     
     // How many beacons are in the database?
     int size();

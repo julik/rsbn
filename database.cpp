@@ -4,7 +4,7 @@ using namespace std;
 Database::Database() {
     selStrobe = 1;
     selNul = 0;
-    tunedBc = NULL;
+    isTuned = FALSE;
 }
 
 Database::Database(char path[1024])
@@ -29,30 +29,36 @@ void Database::loadDataFrom(char path[1024])
     inFile.close();
 }
 
-void Database::setPositionAndFindNearest(double acfX, double acfY, double acfZ, double acfLat, double acfLon)
+void Database::setPositionAndFindNearest(double acfX, double acfY, 
+    double acfZ, double acfLat, double acfLon)
 {
+    
+    char channelCode[3];
+    sprintf(channelCode, "%1d%1d", selStrobe, selNul);
+    
     curX = acfX;
     curY = acfY;
     curZ = acfZ;
     curLat = acfLat;
     curLon = acfLon;
     
-    // TODO - optimize - if the tunedBc beacon is in range keep it
-    
-    char channelCode[3];
-    sprintf(channelCode, "%1d%1d", selStrobe, selNul);
+    // Optimize - if the tunedBc beacon is already found and preselected keep it,
+    // don't alloc any iterators
+    if (isTuned && strcmp(tunedBc.channel, channelCode) == 0) return;
     
     vector<Beacon>::iterator it =  db.begin();
     while( it != db.end() ) {
         Beacon bc = *it;
-        if(strcmp(bc.channel, channelCode) == 0){
-            tunedBc = &bc; return;
+        if(strcmp(bc.channel, channelCode) == 0) {
+            isTuned = true;
+            tunedBc = bc;
+            return;
         }
         it++;
     }
     
     // None found if we got here
-    tunedBc = NULL;
+    isTuned = false;
 }
 
 int Database::size()
@@ -63,25 +69,25 @@ int Database::size()
 float Database::getDistance()
 {
     // Get the selected channels
-    return (tunedBc != NULL) ? (*tunedBc).distanceFrom(curX, curY, curZ) : 0.0;
+    return (isTuned ? tunedBc.distanceFrom(curX, curY, curZ) : 0.0);
 }
 
 bool Database::isOverflyingNow()
 {
-    return (tunedBc != NULL) && (getDistance() < curY);
+    return (isTuned ? (getDistance() < curY) : FALSE);
 }
 
 bool Database::isReceiving()
 {
-    return (tunedBc != NULL);
+    return (isTuned);
 }
 
 // TODO refactor
 float Database::getBearing()
 {
     // Get the selected channels
-    if(tunedBc != NULL) {
-        return (*tunedBc).bearingToAcf(curLat, curLon);
+    if(isTuned) {
+        return tunedBc.bearingToAcf(curLat, curLon);
     } else  {
         return 0.0;
     }
@@ -90,8 +96,8 @@ float Database::getBearing()
 void Database::tunedBeaconInfo(char *name)
 {
     // Get the selected channels
-    if (tunedBc != NULL) {
-        sprintf(name, "%sk %s",  (*tunedBc).channel, (*tunedBc).name);
+    if (isTuned) {
+        sprintf(name, "%sk %s",  tunedBc.channel, tunedBc.name);
     } else {
         // No beacon found, swallow
         strcpy(name, "<NO RECEPTION>");

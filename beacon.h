@@ -6,19 +6,12 @@ public:
     // Injected from the datafile
     char        channel[3];
     char        callsign[4];
+    char        vorFreq[8];
     char        name[256];
-    double      lat;
-    double      lon;
-    double      elev;
+    double      lat, lon, elev;
+    double      locX, locY, locZ;
     
-    // If the data is precompiled
-    bool        cachedCoords;
-    
-    // Gets computed -  local OpenGL X-Plane coords for the beacon
-    double      locX;
-    double      locY;
-    double      locZ;
-    
+    bool cachedCoords;
     // Implicit constructor
     Beacon();
     
@@ -31,7 +24,7 @@ public:
     double bearingToAcf(double acfLat, double acfLon);
     
     // Get the absolute distance to aircraft, in meters
-    double distanceFrom(double acfX, double acfY, double acfZ);
+    float distanceFrom(double acfX, double acfY, double acfZ);
     
     // Is the beacon within the reception range?
     // RSBN max reception distance
@@ -41,7 +34,4 @@ public:
     
     // Returns true if we are currently overflying this beacon
     bool isOverflyingNow(double acfX, double acfY, double acfZ);
-    
-    // Translate the beacon coords into X-Plane coordinate system and cache XYZ coords
-    void translateCoords();
 };

@@ -22,4 +22,12 @@ public:
     void update();
     
     void attachDatarefs();
+    
+    void drawToMap();
+    
+private:
+    
+    void drawCircle(float radius, float atX, float atY);
+
+    void drawBeacon(Beacon &bc, int atMapX, int atMapY);
 };
