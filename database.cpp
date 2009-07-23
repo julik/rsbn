@@ -33,9 +33,6 @@ void Database::setPositionAndFindNearest(double acfX, double acfY,
     double acfZ, double acfLat, double acfLon)
 {
     
-    char channelCode[3];
-    sprintf(channelCode, "%1d%1d", selStrobe, selNul);
-    
     curX = acfX;
     curY = acfY;
     curZ = acfZ;
@@ -43,22 +40,39 @@ void Database::setPositionAndFindNearest(double acfX, double acfY,
     curLon = acfLon;
     
     // Optimize - if the tunedBc beacon is already found and preselected keep it,
-    // don't alloc any iterators
-    if (isTuned && strcmp(tunedBc.channel, channelCode) == 0 && tunedBc.isInRangeOf(acfX, acfY, acfZ)) return;
+    // don't alloc any iterators and only check for distance. If it's out of range it's
+    // time to search again
+    if (isTuned && 
+        tunedBc.hasCode(selStrobe, selNul) && 
+        tunedBc.distanceFrom(curX, curY, curZ) < 210 && // Use a smaller number for ensured reception (zones overlap sometimes)
+        tunedBc.isInRangeOf(acfX, acfY, acfZ)) return;
     
+    vector<Beacon> shortList;
     vector<Beacon>::iterator it =  db.begin();
     while( it != db.end() ) {
         Beacon bc = *it;
-        if(strcmp(bc.channel, channelCode) == 0 && tunedBc.isInRangeOf(acfX, acfY, acfZ)) {
-            isTuned = true;
-            tunedBc = bc;
-            return;
+        if(bc.hasCode(selStrobe, selNul) && bc.isInRangeOf(acfX, acfY, acfZ)) {
+            shortList.push_back(bc);
         }
         it++;
     }
     
+    // Bail out if none are found
+    if(shortList.size() == 0) {
+        isTuned = false; return;
+    }
+    
+    tunedBc = shortList.front();
+    
+    for (vector<Beacon>::iterator curItem = shortList.begin(); curItem != shortList.end(); ++curItem) {
+        if(tunedBc.distanceFrom(curX, curY, curZ) > (*curItem).distanceFrom(curX, curY, curZ)) {
+            tunedBc = (*curItem);
+        }
+    }
+    
+    // Now pick the nearest onbe from the short list
     // None found if we got here
-    isTuned = false;
+    isTuned = true;
 }
 
 int Database::size()
@@ -102,4 +116,14 @@ void Database::tunedBeaconInfo(char *name)
         // No beacon found, swallow
         strcpy(name, "<NO RECEPTION>");
     }
+}
+
+void Database::flushCoordinateCache()
+{
+    vector<Beacon>::iterator it =  db.begin();
+    while( it != db.end() ) {
+        (*it).cachedCoords = FALSE;
+        it++;
+    }
+    isTuned = FALSE;
 }

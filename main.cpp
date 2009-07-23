@@ -9,7 +9,6 @@
 static Database rsbn;
 static Gate proxy;
 
-// static Cartographer map = NULL;
 static XPLMMenuID rsbnMenu;
 static int rsbnMenuItem = -1;
 static XPLMWindowID gWindow = NULL;
@@ -273,5 +272,8 @@ PLUGIN_API int XPluginEnable(void)
 
 PLUGIN_API void XPluginReceiveMessage(XPLMPluginID inFrom, long inMsg, void *inParam)
 {
-    
+    if (inMsg == XPLM_MSG_AIRPORT_LOADED || inMsg == XPLM_MSG_PLANE_LOADED) {
+        // Force an update of all of the beacon coordinates in X-Plane XYZ
+        rsbn.flushCoordinateCache();
+    }
 }

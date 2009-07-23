@@ -8,8 +8,11 @@ public:
     char        callsign[4];
     char        vorFreq[8];
     char        name[256];
+    
     double      lat, lon, elev;
     double      locX, locY, locZ;
+    
+    int strobe, nul;
     
     bool cachedCoords;
     // Implicit constructor
@@ -25,6 +28,9 @@ public:
     
     // Get the absolute distance to aircraft, in meters
     float distanceFrom(double acfX, double acfY, double acfZ);
+    
+    // Is the beacon on this channel?
+    bool hasCode(int strobe, int nul);
     
     // Is the beacon within the reception range?
     // RSBN max reception distance

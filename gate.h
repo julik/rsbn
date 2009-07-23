@@ -11,7 +11,9 @@ public:
     XPLMDataRef acfZRef;
     XPLMDataRef acfLatRef;
     XPLMDataRef acfLonRef;
-     
+    
+    XPLMDataRef acfAltRef;
+    
     XPLMDataRef localMapLeft;
     XPLMDataRef localMapBottom;
     XPLMDataRef localMapRight;

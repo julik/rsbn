@@ -49,7 +49,9 @@ public:
     
     // Returns TRUE if the linear distance from the aircraft is less than the aircraft's altitude + 2 km 
     bool Database::isOverflyingNow();
-
+    
+    void flushCoordinateCache();
+    
 private:
     
     double curX;

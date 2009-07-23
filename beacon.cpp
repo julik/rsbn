@@ -3,8 +3,8 @@ extern void XPLMWorldToLocal(double lat, double lon, double elev, double &locX, 
 
 using namespace std;
 
-#define RAD_RATIO 57.2957795
-#define MAX_DISTANCE_KM 496.0 // see here http://zi-16.narod.ru/study/study-all.htm
+static const float RAD_RATIO = 57.2957795;
+static const float MAX_DISTANCE_KM = 496.0; // see here http://zi-16.narod.ru/study/study-all.htm
 
 double inline radToDeg(double rad) {
     return rad * RAD_RATIO;
@@ -32,16 +32,23 @@ Beacon::Beacon(char *line)
     lat =  atof(strtok(NULL, "|"));
     lon =  atof(strtok(NULL, "|"));
     elev = atof(strtok(NULL, "\n"));
-    std::cout << lat << "\n";
-    std::cout << lon << "\n";
-    std::cout << name << "\n";
+}
+
+bool Beacon::hasCode(int strobe, int nul)
+{
+    char code[] = "01";
+    sprintf(code, "%d%d", strobe, nul);
+    return strcmp(code, channel) == 0;
 }
 
 // Get the absolute distance to aircraft, in kilometers
 float Beacon::distanceFrom(double acfX, double acfY, double acfZ)
 {
     if(!cachedCoords) {
-    	// Compute the beacon coordinates if none have been defined yet
+    	// Compute the beacon coordinates if none have been defined yet. Since
+    	// this is expensive and needs to happen on sim load we cache the local coordinates
+    	// per beacon. If you compute this every frame for every beacon you thrash X-Plane
+    	// approximately within a minute
     	XPLMWorldToLocal(lat, lon, elev, &locX, &locY, &locZ);
     	cachedCoords = true;
     }
@@ -54,7 +61,7 @@ float Beacon::distanceFrom(double acfX, double acfY, double acfZ)
     // XY
     double distXYsq = pow(relX,2) + pow(relY,2);
 
-    // and distance, in meters. abs(1) for doubles is not portable
+    // and distance, in meters
     double dist = sqrt(distXYsq + pow(relZ, 2)) / 1000;
 
     return (float)dist;
@@ -66,15 +73,13 @@ float Beacon::distanceFrom(double acfX, double acfY, double acfZ)
 // max_km = 3.57 * sqrt(height_of_acft_in_meters)
 // There is also a "mushroom" of inop whose radius is roughly eql to H
 bool Beacon::isInRangeOf(double acfX, double acfY, double acfZ) {
-    double maxDist = MAX_DISTANCE_KM; // 3.57 * sqrt(acfY);
-    double dist = 100; //distanceFrom(acfX, acfY, acfZ);
-    return (dist < maxDist); // NOT yet -  && (dist > (XPLMGetDataf(acfYRef) / 1000));
+    return distanceFrom(acfX, acfY, acfZ) < MAX_DISTANCE_KM;
 }
 
 // Check if we are overflying now
 bool Beacon::isOverflyingNow(double acfX, double acfY, double acfZ) {
     double dist = distanceFrom(acfX, acfY, acfZ);
-    return ( dist < (acfY / 1000));
+    return (dist < (acfY / 1000));
 }
 
 
