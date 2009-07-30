@@ -81,7 +81,7 @@ float Database::getDistance()
 
 bool Database::isOverflyingNow()
 {
-    return (isTuned ? (getDistance() < curElev) : FALSE);
+    return (isTuned ? tunedBc.isOverflyingNow(curLat, curLon, curElev) : FALSE);
 }
 
 bool Database::isReceiving()

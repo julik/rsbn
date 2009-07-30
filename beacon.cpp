@@ -52,8 +52,7 @@ bool Beacon::isInRangeOf(double acfLat, double acfLon, double acfElev)
 
 // Check if we are overflying now
 bool Beacon::isOverflyingNow(double acfLat, double acfLon, double acfElev) {
-    double dist = distanceFrom(acfLat, acfLon, acfElev);
-    return (dist < (acfElev / 1000));
+    return distanceFrom(acfLat, acfLon, acfElev) < (acfElev/1000);
 }
 
 
