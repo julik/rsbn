@@ -6,9 +6,6 @@ public:
     Database * db;
         
     // XP datarefs. Will be initialized when the database is created by the plugin
-    XPLMDataRef acfXRef;
-    XPLMDataRef acfYRef;
-    XPLMDataRef acfZRef;
     XPLMDataRef acfLatRef;
     XPLMDataRef acfLonRef;
     

@@ -10,7 +10,6 @@ public:
     char        name[256];
     
     double      lat, lon, elev;
-    double      locX, locY, locZ;
     
     int strobe, nul;
     
@@ -26,7 +25,7 @@ public:
     // to reciprocate the bearing
     double bearingToAcf(double acfLat, double acfLon);
     
-    // Get the absolute distance to aircraft, in meters
+    // Get the absolute distance to aircraft, in kilometers
     double distanceFrom(double acfLat, double acfLon, double acfElev);
     
     // Is the beacon on this channel?

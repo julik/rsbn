@@ -11,16 +11,12 @@ void Gate::update()
    if (db == NULL) return;
     
    (*db).setPositionAndFindNearest(
-       XPLMGetDataf(acfXRef), XPLMGetDataf(acfYRef), XPLMGetDataf(acfZRef), 
        XPLMGetDataf(acfLatRef), XPLMGetDataf(acfLonRef), XPLMGetDataf(acfAltRef)
     );
 }
 
 void Gate::attachDatarefs()
 {
-    acfXRef = XPLMFindDataRef("sim/flightmodel/position/local_x");
-    acfYRef = XPLMFindDataRef("sim/flightmodel/position/local_y");
-    acfZRef = XPLMFindDataRef("sim/flightmodel/position/local_z");
     acfLatRef = XPLMFindDataRef("sim/flightmodel/position/latitude");
     acfLonRef = XPLMFindDataRef("sim/flightmodel/position/longitude");
     acfAltRef = XPLMFindDataRef("sim/flightmodel/position/elevation");

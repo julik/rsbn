@@ -29,13 +29,8 @@ void Database::loadDataFrom(char path[1024])
     inFile.close();
 }
 
-void Database::setPositionAndFindNearest(double acfX, double acfY, 
-    double acfZ, double acfLat, double acfLon, double acfElev)
+void Database::setPositionAndFindNearest(double acfLat, double acfLon, double acfElev)
 {
-    
-    curX = acfX;
-    curY = acfY;
-    curZ = acfZ;
     curLat = acfLat;
     curLon = acfLon;
     curElev = acfElev;
