@@ -262,7 +262,7 @@ PLUGIN_API int XPluginStart(char *outName, char *outSig, char *outDesc)
             NULL, NULL);                                   // Refcons not used
 
     // Dataref for bearing TO, wired to a callback on the database
-    XPLMRegisterDataAccessor("rsbn/bearing_to_true",
+    XPLMRegisterDataAccessor("rsbn/bearing_to",
             xplmType_Float,                                // The types we support
             FALSE,                                             // Writable
             NULL, NULL,                              // Integer accessors
