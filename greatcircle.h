@@ -15,14 +15,19 @@ inline double rad2deg(double rad) {
 }
 
 double gcDistance(double lat1, double lon1, double lat2, double lon2) {
-  double theta, dist;
-  theta = lon1 - lon2;
-  dist = sin(deg2rad(lat1)) * sin(deg2rad(lat2)) + cos(deg2rad(lat1)) * cos(deg2rad(lat2)) * cos(deg2rad(theta));
+  lat1 = deg2rad(lat1);
+  lon1 = deg2rad(lon1);
+  lat2 = deg2rad(lat2);
+  lon2 = deg2rad(lon2);
+  
+  double deltaL = lon1 - lon2; // ???
+  double dist = sin(lat1) * sin(lat2) + cos(lat1) * cos(lat2) * cos(deltaL);
   dist = acos(dist);
+  
   return rad2deg(dist) * 60 * KM_IN_MINUTE;
 }
 
-// SImplified great circle bearing - http://www.dtcenter.org/met/users/docs/write_ups/gc_simple.pdf
+// Simplified great circle bearing - http://www.dtcenter.org/met/users/docs/write_ups/gc_simple.pdf.
 double gcBearingTo(double lat1, double lon1, double lat2, double lon2)
 {
     lat1 = deg2rad(lat1);
@@ -31,7 +36,6 @@ double gcBearingTo(double lat1, double lon1, double lat2, double lon2)
     lon2 = deg2rad(lon2);
 
     double deltaL = lon2 - lon1;
-    // S is cos(lat2) * sin(deltaLon)
     double s = cos(lat2) * sin(deltaL);
     double c = (cos(lat1) * sin(lat2)) - (sin(lat1)*cos(lat2)*cos(deltaL));
     
