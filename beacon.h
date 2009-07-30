@@ -3,6 +3,7 @@
 class   Beacon
 {
 public:
+    
     // Injected from the datafile
     char        channel[3];
     char        callsign[4];
@@ -20,10 +21,11 @@ public:
     // Construct from a line
     Beacon(char *line);
     
-    // Get bearing FROM the beacon TO the aircraft ("azimut ot"), at the beacon's position in true degrees
-    // If the onboard eqpt supports "azimut na" ("to" mode) it's the responsibility of the onboard set
-    // to reciprocate the bearing
+    // Get bearing FROM the beacon TO the aircraft, at the beacon's position in true degrees
     double bearingToAcf(double acfLat, double acfLon);
+    
+    // Get bearing TO the beacon FROM the aircraft, at the aircraft's position in true degrees
+    double bearingFromAcf(double acfLat, double acfLon);
     
     // Get the absolute distance to aircraft, in kilometers
     double distanceFrom(double acfLat, double acfLon, double acfElev);

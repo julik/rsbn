@@ -20,6 +20,7 @@ void Gate::attachDatarefs()
     acfLatRef = XPLMFindDataRef("sim/flightmodel/position/latitude");
     acfLonRef = XPLMFindDataRef("sim/flightmodel/position/longitude");
     acfAltRef = XPLMFindDataRef("sim/flightmodel/position/elevation");
+    magVarRef = XPLMFindDataRef("sim/flightmodel/position/magnetic_variation");
     localMapTop = XPLMFindDataRef("sim/graphics/view/local_map_t");
     localMapLeft = XPLMFindDataRef("sim/graphics/view/local_map_l");
     localMapBottom = XPLMFindDataRef("sim/graphics/view/local_map_b");

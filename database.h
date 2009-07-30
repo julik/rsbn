@@ -44,13 +44,13 @@ public:
     // Returns bearing from the beacon to the aircraft
     float getBearing();
     
+    float getInverseBearing();
+    
     // Get the name of the current beacon and write it into the passed char pointer
     void tunedBeaconInfo(char *name);
     
     // Returns TRUE if the linear distance from the aircraft is less than the aircraft's altitude + 2 km 
-    bool Database::isOverflyingNow();
-    
-    void flushCoordinateCache();
+    bool isOverflyingNow();
     
 private:
     

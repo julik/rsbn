@@ -35,8 +35,8 @@ double gcBearingTo(double lat1, double lon1, double lat2, double lon2)
     double s = cos(lat2) * sin(deltaL);
     double c = (cos(lat1) * sin(lat2)) - (sin(lat1)*cos(lat2)*cos(deltaL));
     
-    // This formula returns quadrant as a SIGN of the result, that is - a bearing of 270
-    // will be actually -90. We account for that.
+    // This formula returns quadrant as a SIGN of the result, that is - a bearing of 260
+    // will be returned as -100. We account for that.
     double degPosOrNeg = rad2deg(atan2(s, c));
     if (degPosOrNeg < 0) degPosOrNeg = 360.0 + degPosOrNeg;
     

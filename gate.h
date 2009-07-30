@@ -8,8 +8,9 @@ public:
     // XP datarefs. Will be initialized when the database is created by the plugin
     XPLMDataRef acfLatRef;
     XPLMDataRef acfLonRef;
-    
     XPLMDataRef acfAltRef;
+    
+    XPLMDataRef magVarRef;
     
     XPLMDataRef localMapLeft;
     XPLMDataRef localMapBottom;
@@ -19,7 +20,7 @@ public:
     Gate();
     
     void update();
-    
+        
     void attachDatarefs();
     
     void drawToMap();

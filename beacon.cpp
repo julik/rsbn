@@ -47,18 +47,24 @@ double Beacon::distanceFrom(double acfLat, double acfLon, double acfElev)
 // There is also a "mushroom" of inop whose radius is roughly eql to H
 bool Beacon::isInRangeOf(double acfLat, double acfLon, double acfElev)
 {
-    return distanceFrom(acfLat, acfLon, acfElev) < (3.57 * sqrt(acfElev));
+    double dS = distanceFrom(acfLat, acfLon, acfElev);
+    return dS < (3.57 * sqrt(acfElev)) && dS < MAX_DISTANCE_KM;
 }
 
 // Check if we are overflying now
 bool Beacon::isOverflyingNow(double acfLat, double acfLon, double acfElev) {
-    return distanceFrom(acfLat, acfLon, acfElev) < (acfElev/1000);
+    return distanceFrom(acfLat, acfLon, acfElev) < 1;
 }
 
 
 // Get the bearing to aircraft
-// http://www.movable-type.co.uk/scripts/latlong.html
 double Beacon::bearingToAcf(double acfLatDeg, double acfLonDeg)
 {
     return gcBearingTo(lat, lon, acfLatDeg, acfLonDeg);
+}
+
+// Get the bearing from the aircraft
+double Beacon::bearingFromAcf(double acfLatDeg, double acfLonDeg)
+{
+    return gcBearingTo(acfLatDeg, acfLonDeg, lat, lon);
 }

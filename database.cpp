@@ -89,12 +89,21 @@ bool Database::isReceiving()
     return (isTuned);
 }
 
-// TODO refactor
 float Database::getBearing()
 {
     // Get the selected channels
     if(isTuned) {
         return tunedBc.bearingToAcf(curLat, curLon);
+    } else  {
+        return 0.0;
+    }
+}
+
+float Database::getInverseBearing()
+{
+    // Get the selected channels
+    if(isTuned) {
+        return tunedBc.bearingFromAcf(curLat, curLon);
     } else  {
         return 0.0;
     }
@@ -109,14 +118,4 @@ void Database::tunedBeaconInfo(char *name)
         // No beacon found, swallow
         strcpy(name, "<NO RECEPTION>");
     }
-}
-
-void Database::flushCoordinateCache()
-{
-    vector<Beacon>::iterator it =  db.begin();
-    while( it != db.end() ) {
-        (*it).cachedCoords = FALSE;
-        it++;
-    }
-    isTuned = FALSE;
 }
