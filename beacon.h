@@ -27,7 +27,7 @@ public:
     double bearingToAcf(double acfLat, double acfLon);
     
     // Get the absolute distance to aircraft, in meters
-    float distanceFrom(double acfX, double acfY, double acfZ);
+    double distanceFrom(double acfLat, double acfLon, double acfElev);
     
     // Is the beacon on this channel?
     bool hasCode(int strobe, int nul);
@@ -36,8 +36,8 @@ public:
     // RSBN max reception distance
     // depends on inverse square falloff, according to the following law
     // max_km = 3.57 * sqrt(height_in_meters
-    bool isInRangeOf(double acfX, double acfY, double acfZ);
+    bool isInRangeOf(double acfLat, double acfLon, double acfElev);
     
     // Returns true if we are currently overflying this beacon
-    bool isOverflyingNow(double acfX, double acfY, double acfZ);
+    bool isOverflyingNow(double acfLat, double acfLon, double acfElev);
 };

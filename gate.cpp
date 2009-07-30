@@ -12,7 +12,7 @@ void Gate::update()
     
    (*db).setPositionAndFindNearest(
        XPLMGetDataf(acfXRef), XPLMGetDataf(acfYRef), XPLMGetDataf(acfZRef), 
-       XPLMGetDataf(acfLatRef), XPLMGetDataf(acfLonRef)
+       XPLMGetDataf(acfLatRef), XPLMGetDataf(acfLonRef), XPLMGetDataf(acfAltRef)
     );
 }
 

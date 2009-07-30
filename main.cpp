@@ -90,6 +90,12 @@ static void inspectorWindowCB( XPLMWindowID    inWindowID, void * inRefcon)
 
 	char c_sn[64];
 	snprintf(c_sn, 64, "rsbn/strobe and rsbn/nul %1d %1d", getStrobe(NULL), getNul(NULL));
+
+	char c_lat[64];
+	snprintf(c_lat, 64, "lat %f", XPLMGetDataf(proxy.acfLatRef));
+
+	char c_lon[64];
+	snprintf(c_lon, 64, "lon %f", XPLMGetDataf(proxy.acfLonRef));
     
     char c_inf[128];
     rsbn.tunedBeaconInfo(c_inf);
@@ -111,6 +117,13 @@ static void inspectorWindowCB( XPLMWindowID    inWindowID, void * inRefcon)
 
 	XPLMDrawString(color, left + 5, top - 90,
 		c_inf, NULL, xplmFont_Basic);
+
+	XPLMDrawString(color, left + 5, top - 100,
+		c_lat, NULL, xplmFont_Basic);
+
+	XPLMDrawString(color, left + 5, top - 110,
+		c_lon, NULL, xplmFont_Basic);
+
 }
 
 void rsbn_selectDataset(void* menuRef, void* selection)

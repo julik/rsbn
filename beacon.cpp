@@ -1,4 +1,6 @@
 #include "beacon.h"
+#include "greatcircle.h"
+
 extern void XPLMWorldToLocal(double lat, double lon, double elev, double &locX, double &locY, double &locZ);
 
 using namespace std;
@@ -41,45 +43,29 @@ bool Beacon::hasCode(int strobe, int nul)
     return strcmp(code, channel) == 0;
 }
 
-// Get the absolute distance to aircraft, in kilometers
-float Beacon::distanceFrom(double acfX, double acfY, double acfZ)
+// Get the absolute distance to aircraft, in kilometers, taking the altitude into account
+double Beacon::distanceFrom(double acfLat, double acfLon, double acfElev)
 {
-    if(!cachedCoords) {
-    	// Compute the beacon coordinates if none have been defined yet. Since
-    	// this is expensive and needs to happen on sim load we cache the local coordinates
-    	// per beacon. If you compute this every frame for every beacon you thrash X-Plane
-    	// approximately within a minute
-    	XPLMWorldToLocal(lat, lon, elev, &locX, &locY, &locZ);
-    	cachedCoords = true;
-    }
-
-    // Compute absolute distance to acf, cartesian
-    double relX = acfX - locZ;
-    double relY = acfY - locY;
-    double relZ = acfZ - locZ;
-
-    // XY
-    double distXYsq = pow(relX,2) + pow(relY,2);
-
-    // and distance, in meters
-    double dist = sqrt(distXYsq + pow(relZ, 2)) / 1000;
-
-    return (float)dist;
+    double linearDist = gcDistance(acfLat, acfLon, lat, lon);
+    double tanDist = sqrt(pow(linearDist, 2) + pow(((acfElev - elev) / 1000), 2));
+    return tanDist;
 }
 
 // Is the beacon within the reception range?
 // RSBN max reception distance
 // depends on inverse square falloff, according to the following law
 // max_km = 3.57 * sqrt(height_of_acft_in_meters)
+// (see Chyorny and Korablin)
 // There is also a "mushroom" of inop whose radius is roughly eql to H
-bool Beacon::isInRangeOf(double acfX, double acfY, double acfZ) {
-    return distanceFrom(acfX, acfY, acfZ) < MAX_DISTANCE_KM;
+bool Beacon::isInRangeOf(double acfLat, double acfLon, double acfElev)
+{
+    return distanceFrom(acfLat, acfLon, acfElev) < (3.57 * sqrt(acfElev));
 }
 
 // Check if we are overflying now
-bool Beacon::isOverflyingNow(double acfX, double acfY, double acfZ) {
-    double dist = distanceFrom(acfX, acfY, acfZ);
-    return (dist < (acfY / 1000));
+bool Beacon::isOverflyingNow(double acfLat, double acfLon, double acfElev) {
+    double dist = distanceFrom(acfLat, acfLon, acfElev);
+    return (dist < (acfElev / 1000));
 }
 
 

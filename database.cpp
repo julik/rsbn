@@ -30,7 +30,7 @@ void Database::loadDataFrom(char path[1024])
 }
 
 void Database::setPositionAndFindNearest(double acfX, double acfY, 
-    double acfZ, double acfLat, double acfLon)
+    double acfZ, double acfLat, double acfLon, double acfElev)
 {
     
     curX = acfX;
@@ -38,40 +38,38 @@ void Database::setPositionAndFindNearest(double acfX, double acfY,
     curZ = acfZ;
     curLat = acfLat;
     curLon = acfLon;
+    curElev = acfElev;
     
     // Optimize - if the tunedBc beacon is already found and preselected keep it,
     // don't alloc any iterators and only check for distance. If it's out of range it's
     // time to search again
-    if (isTuned && 
-        tunedBc.hasCode(selStrobe, selNul) && 
-        tunedBc.distanceFrom(curX, curY, curZ) < 210 && // Use a smaller number for ensured reception (zones overlap sometimes)
-        tunedBc.isInRangeOf(acfX, acfY, acfZ)) return;
+    if (isTuned &&
+        tunedBc.hasCode(selStrobe, selNul) &&
+        tunedBc.isInRangeOf(acfLat, acfLon, acfElev)) return;
     
     vector<Beacon> shortList;
     vector<Beacon>::iterator it =  db.begin();
     while( it != db.end() ) {
         Beacon bc = *it;
-        if(bc.hasCode(selStrobe, selNul) && bc.isInRangeOf(acfX, acfY, acfZ)) {
+        if( bc.hasCode(selStrobe, selNul) && bc.isInRangeOf(acfLat, acfLon, acfElev)) {
             shortList.push_back(bc);
         }
         it++;
     }
     
     // Bail out if none are found
-    if(shortList.size() == 0) {
-        isTuned = false; return;
+    if( 0 == shortList.size()) {
+        isTuned = false;
+        return;
     }
     
     tunedBc = shortList.front();
     
     for (vector<Beacon>::iterator curItem = shortList.begin(); curItem != shortList.end(); ++curItem) {
-        if(tunedBc.distanceFrom(curX, curY, curZ) > (*curItem).distanceFrom(curX, curY, curZ)) {
+        if(tunedBc.distanceFrom(curLat, curLon, curElev) > (*curItem).distanceFrom(curLat, curLon, curElev)) {
             tunedBc = (*curItem);
         }
     }
-    
-    // Now pick the nearest onbe from the short list
-    // None found if we got here
     isTuned = true;
 }
 
@@ -83,12 +81,12 @@ int Database::size()
 float Database::getDistance()
 {
     // Get the selected channels
-    return (isTuned ? tunedBc.distanceFrom(curX, curY, curZ) : 0.0);
+    return (isTuned ? tunedBc.distanceFrom(curLat, curLon, curElev) : 0.0);
 }
 
 bool Database::isOverflyingNow()
 {
-    return (isTuned ? (getDistance() < curY) : FALSE);
+    return (isTuned ? (getDistance() < curElev) : FALSE);
 }
 
 bool Database::isReceiving()

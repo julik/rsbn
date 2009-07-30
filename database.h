@@ -33,7 +33,8 @@ public:
     Beacon findClosestByChannel();
     
     // Scan the beacons and select a beacon that works
-    void setPositionAndFindNearest(double acfX, double acfY, double acfZ, double acfLat, double acfLon);
+    void setPositionAndFindNearest(double acfX, double acfY, 
+        double acfZ, double acfLat, double acfLon, double acfElev);
     
     // How many beacons are in the database?
     int size();
@@ -54,9 +55,5 @@ public:
     
 private:
     
-    double curX;
-    double curY;
-    double curZ;
-    double curLat;
-    double curLon;
+    double curX, curY, curZ, curLat, curLon, curElev;
 };
