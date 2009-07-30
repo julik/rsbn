@@ -61,16 +61,5 @@ bool Beacon::isOverflyingNow(double acfLat, double acfLon, double acfElev) {
 // http://www.movable-type.co.uk/scripts/latlong.html
 double Beacon::bearingToAcf(double acfLatDeg, double acfLonDeg)
 {
-	// Compute relative bearing to the beacon (Azimut), relative to the beacon true north. Since true north is used
-	// we can operate in lat/lon directly, but to do it we first need the aircraft position in lat/lon terms
-	// We compute FROM the beacon as opposed to TO, and then reciprocate the heading
-	double lat1 = deg2rad(acfLatDeg);
-	double lon1 = deg2rad(acfLonDeg);
-    
-    double lat2 = deg2rad(lat);
-    double lon2 = deg2rad(lon);
-    
-    // Radians to degrees
-    double brg = atan2(sin(lat2 - lat1) * cos(lat2), (cos(lat1) * sin(lat2)) - (sin(lat1)* cos(lat2) * cos(lon2 - lon1)));
-    return fmod((rad2deg(brg) + 180), 360.0);
+    return gcBearingTo(lat, lon, acfLatDeg, acfLonDeg);
 }
