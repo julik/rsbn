@@ -16,10 +16,6 @@ static int rsbnMenuItem = -1;
 static XPWidgetID gWindow = NULL;
 static bool plugIsEnabled = TRUE;
 
-inline int clamp(int min, int value, int max) {
-    return value >= max ? max : (value <= min ? min : value);
-}
-
 // Data access callbacks. All X-Plane callbacks for data sets/gets need a void refcon pointer at the start
 static int getStrobe(void* inRefcon) {
     return rsbn.selStrobe;
@@ -69,6 +65,16 @@ static float getBearingToMag(void *inRefcon)
     return rsbn.getInverseBearing() + XPLMGetDataf(proxy.magVarRef);
 }
 
+static float getBeaconLat(void *inRefcon)
+{
+    return (rsbn.isTuned) ? rsbn.tunedBc.lat : 0;
+}
+
+static float getBeaconLon(void *inRefcon)
+{
+    return (rsbn.isTuned) ? rsbn.tunedBc.lon : 0;
+}
+
 /*
 static int drawMapCB(XPLMDrawingPhase inPhase, int inIsBefore, void *inRefcon)
 {
@@ -114,6 +120,10 @@ static void drawDebugInfo(XPWidgetID intoWindow, int x, int y)
     rsbn.tunedBeaconInfo(c_inf);
     infoLines.push_back(string(c_inf));
 	
+	char c_sn[lineLen];
+	snprintf(c_sn, lineLen, "rsbn/strobe and rsbn/nul %1d %1d", getStrobe(NULL), getNul(NULL));
+    infoLines.push_back(string(c_sn));
+    
     char c_brg[lineLen];
 	snprintf(c_brg, lineLen,  "rsbn/bearing (dTrue) %.2f", getBearing(NULL));
     infoLines.push_back(string(c_brg));
@@ -138,10 +148,14 @@ static void drawDebugInfo(XPWidgetID intoWindow, int x, int y)
 	snprintf(c_reception, lineLen, "rsbn/receiving %1d", getReceiving(NULL));
     infoLines.push_back(string(c_reception));
 
-	char c_sn[lineLen];
-	snprintf(c_sn, lineLen, "rsbn/strobe and rsbn/nul %1d %1d", getStrobe(NULL), getNul(NULL));
-    infoLines.push_back(string(c_sn));
-    
+	char c_lat[lineLen];
+	snprintf(c_lat, lineLen, "rsbn/beacon_lat (deg) %.2f", getBeaconLat(NULL));
+    infoLines.push_back(string(c_lat));
+
+	char c_lon[lineLen];
+	snprintf(c_lon, lineLen, "rsbn/beacon_lon (deg) %.2f", getBeaconLon(NULL));
+    infoLines.push_back(string(c_lon));
+
     int endAt;
     for (vector<string>::iterator curItem = infoLines.begin(); curItem != infoLines.end(); ++curItem) {
         string line = (*curItem);
@@ -168,7 +182,7 @@ void rsbn_selectDataset(void* menuRef, void* selection)
         int x = 100;
         int y = 700;
         int w = 400;
-        int h = 195;
+        int h = 225;
         
         int x2 = x + w;
         int y2 = y - h;
@@ -308,6 +322,30 @@ PLUGIN_API int XPluginStart(char *outName, char *outSig, char *outDesc)
             NULL, NULL,             // Float array accessors
             NULL, NULL,             // Raw data accessors
             NULL, NULL);            // Refcons not used
+    
+    // Will contain the latitude of the current beacon
+    XPLMRegisterDataAccessor("rsbn/beacon_lat",
+            xplmType_Float,                                // The types we support
+            FALSE,                                             // Writable
+            NULL, NULL,                              // Integer accessors
+            getBeaconLat, NULL,                                    // Float accessors
+            NULL, NULL,                                    // Doubles accessors
+            NULL, NULL,                                    // Int array accessors
+            NULL, NULL,                                    // Float array accessors
+            NULL, NULL,                                    // Raw data accessors
+            NULL, NULL);
+    
+    // Will contain the latitude of the current beacon
+    XPLMRegisterDataAccessor("rsbn/beacon_lon",
+            xplmType_Float,                                // The types we support
+            FALSE,                                             // Writable
+            NULL, NULL,                              // Integer accessors
+            getBeaconLon, NULL,                                    // Float accessors
+            NULL, NULL,                                    // Doubles accessors
+            NULL, NULL,                                    // Int array accessors
+            NULL, NULL,                                    // Float array accessors
+            NULL, NULL,                                    // Raw data accessors
+            NULL, NULL);
     
     // Assign the gateway objects
     proxy.db = &rsbn;   

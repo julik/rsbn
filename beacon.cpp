@@ -44,7 +44,7 @@ double Beacon::distanceFrom(double acfLat, double acfLon, double acfElev)
 // depends on inverse square falloff, according to the following law
 // max_km = 3.57 * sqrt(height_of_acft_in_meters)
 // (see Chyorny and Korablin)
-// There is also a "mushroom" of inop whose radius is roughly eql to H
+// There is also a "cone of silence" of inop whose radius is roughly eql to H
 bool Beacon::isInRangeOf(double acfLat, double acfLon, double acfElev)
 {
     double dS = distanceFrom(acfLat, acfLon, acfElev);

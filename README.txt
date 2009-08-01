@@ -1,4 +1,4 @@
-RSBN plugin for X-Plane
+= RSBN plugin for X-Plane
 
 == WHAT IS RSBN
 
@@ -45,6 +45,8 @@ rsbn/distance		(double, readonly) - linear distance to the beacon being received
 rsbn/bearing		(double, readonly) - great circle bearing at the beacon installation point to the aircraft
 rsbn/bearing_to		(double, readonly) - great circle bearing FROM the aircraft TO the beacon, true
 rsbn/bearing_to_mag		(double, readonly) - magnetic bearing FROM the aircraft TO the beacon. Fly THERE.
+rsbn/beacon_lat		(double, readonly) - geo latitude of the current beacon (can be used for calculations)
+rsbn/beacon_lon		(double, readonly) - geo longitude of the current beacon (can be used for calculations)
 
 == DATASETS
 

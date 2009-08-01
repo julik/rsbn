@@ -41,9 +41,10 @@ public:
     // Returns distance to aircraft in kilometers
     float getDistance();
     
-    // Returns bearing from the beacon to the aircraft
+    // Returns bearing from the beacon to the aircraft, degrees true
     float getBearing();
     
+    // Returns bearing from aircraft to the beacon, degrees true
     float getInverseBearing();
     
     // Get the name of the current beacon and write it into the passed char pointer
