@@ -33,7 +33,8 @@ rsbn/strobe (int, writable) - the position of the "Strobe" switch, 0 to 4 are al
 rsbn/nul (int, writable) - the position of the "Nul" switch, 0 to 9
 
 These two datarefs specify the current RSBN channel and can be coupled to usual X-Plane knobs, or to custom
-instruments made using other plugins.
+instruments made using other plugins. The default channel that is tuned when the instrument is initialized
+is 10k, that is Tallinn in Estonia and the Baltic and Chkalovsky when in the Moscow region.
 
 It makes the following datarefs available for reading:
 
