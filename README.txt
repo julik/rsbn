@@ -1,6 +1,6 @@
-= RSBN plugin for X-Plane
+# RSBN plugin for X-Plane
 
-== WHAT IS RSBN
+## WHAT IS RSBN
 
 RSBN (Radiosistema Blizhney Navigatsii) was the soviet TACAN analogue. It had approximately the same features,
 namely:
@@ -25,7 +25,7 @@ A beacon is tuned using the "channel" just as TACAN. Channels have two digits - 
 at the same time, so soviet airfields would often operate a spare RSBN unit to provide glideslope and localizer.
 This functionality is not implemented in the plugin though.
 
-== PLUGIN INFO
+## PLUGIN INFO
 
 The plugin works without a UI. It will load the database of RSBN beacons, and define a number of datarefs:
 
@@ -49,7 +49,7 @@ rsbn/bearing_to_mag		(double, readonly) - magnetic bearing FROM the aircraft TO 
 rsbn/beacon_lat		(double, readonly) - geo latitude of the current beacon (can be used for calculations)
 rsbn/beacon_lon		(double, readonly) - geo longitude of the current beacon (can be used for calculations)
 
-== DATASETS
+## DATASETS
 
 The plugin ships with two datasets. One is for the former USSR and DDR (German Democratic Republic), the other
 is for the CIS (post-1991) state (when most RSBN stations have been put offline and dusmantled). You can
@@ -57,7 +57,7 @@ switch between the datasets using the plugin menu.
 
 The plugin does not change or affect scenery in any way - you can use any scenery you like.
 
-== LICENSE:
+##  LICENSE
 
 (The MIT License)
 
