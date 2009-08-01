@@ -29,8 +29,8 @@ This functionality is not implemented in the plugin though.
 
 The plugin works without a UI. It will load the database of RSBN beacons, and define a number of datarefs:
 
-rsbn/strobe (int, writable) - the position of the "Strobe" switch, 0 to 4 are allowed
-rsbn/nul (int, writable) - the position of the "Nul" switch, 0 to 9
+		rsbn/strobe (int, writable) - the position of the "Strobe" switch, 0 to 4 are allowed
+		rsbn/nul (int, writable) - the position of the "Nul" switch, 0 to 9
 
 These two datarefs specify the current RSBN channel and can be coupled to usual X-Plane knobs, or to custom
 instruments made using other plugins. The default channel that is tuned when the instrument is initialized
@@ -38,16 +38,16 @@ is 10k, that is Tallinn in Estonia and the Baltic and Chkalovsky when in the Mos
 
 It makes the following datarefs available for reading:
 
-rsbn/receiving 		(int, readonly) - will contain 1 if the beacon is being received now
-rsbn/overflight (int, readonly) - will contain 1 if the beacon is being overflown now (the distance to the beacon
-is less than 1 km)
-
-rsbn/distance		(double, readonly) - linear distance to the beacon being received in kilometers
-rsbn/bearing		(double, readonly) - great circle bearing at the beacon installation point to the aircraft
-rsbn/bearing_to		(double, readonly) - great circle bearing FROM the aircraft TO the beacon, true
-rsbn/bearing_to_mag		(double, readonly) - magnetic bearing FROM the aircraft TO the beacon. Fly THERE.
-rsbn/beacon_lat		(double, readonly) - geo latitude of the current beacon (can be used for calculations)
-rsbn/beacon_lon		(double, readonly) - geo longitude of the current beacon (can be used for calculations)
+		rsbn/receiving 		(int, readonly) - will contain 1 if the beacon is being received now
+		rsbn/overflight (int, readonly) - will contain 1 if the beacon is being overflown now (the distance to the beacon
+		is less than 1 km)
+		
+		rsbn/distance		(double, readonly) - linear distance to the beacon being received in kilometers
+		rsbn/bearing		(double, readonly) - great circle bearing at the beacon installation point to the aircraft
+		rsbn/bearing_to		(double, readonly) - great circle bearing FROM the aircraft TO the beacon, true
+		rsbn/bearing_to_mag		(double, readonly) - magnetic bearing FROM the aircraft TO the beacon. Fly THERE.
+		rsbn/beacon_lat		(double, readonly) - geo latitude of the current beacon (can be used for calculations)
+		rsbn/beacon_lon		(double, readonly) - geo longitude of the current beacon (can be used for calculations)
 
 ## DATASETS
 
