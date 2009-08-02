@@ -11,7 +11,7 @@ void Gate::update()
    if (db == NULL) return;
     
    (*db).setPositionAndFindNearest(
-       XPLMGetDataf(acfLatRef), XPLMGetDataf(acfLonRef), XPLMGetDataf(acfAltRef)
+       XPLMGetDatad(acfLatRef), XPLMGetDatad(acfLonRef), XPLMGetDatad(acfAltRef)
     );
 }
 
