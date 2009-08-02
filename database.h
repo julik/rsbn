@@ -53,6 +53,8 @@ public:
     // Returns TRUE if the linear distance from the aircraft is less than the aircraft's altitude + 2 km 
     bool isOverflyingNow();
     
+    // Clears the embedded vector
+    void clear();
 private:
     
     double curX, curY, curZ, curLat, curLon, curElev;

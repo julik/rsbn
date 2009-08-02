@@ -74,6 +74,11 @@ int Database::size()
     return db.size();
 }
 
+void Database::clear()
+{
+    db.clear();
+}
+
 float Database::getDistance()
 {
     // Get the selected channels

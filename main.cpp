@@ -3,6 +3,7 @@
 #define USSR_DATA (void*)1
 #define CIS_DATA (void*)2
 #define ABOUT_SW (void*)3
+#define UPDATE_INTERVAL -3 // every third frame
 
 #include "libs.h"
 #include "utils.h"
@@ -10,7 +11,7 @@
 
 static Database rsbn;
 static Gate proxy;
-
+static vector<XPLMDataRef> rsbnDatarefs;
 static XPLMMenuID rsbnMenu;
 static int rsbnMenuItem = -1;
 static XPWidgetID gWindow = NULL;
@@ -52,7 +53,7 @@ static int getReceiving(void* inRefcon) {
 static float updateRsbn(float elapsedSinceLastCall, float elapsedTimeSinceLastFlightLoop,  int counter, void *refcon)
 {
     if(plugIsEnabled) proxy.update();
-    return -1;
+    return UPDATE_INTERVAL;
 }
 
 static float getBearingTo(void *inRefcon)
@@ -232,7 +233,7 @@ PLUGIN_API int XPluginStart(char *outName, char *outSig, char *outDesc)
     rsbn_selectDataset(NULL, USSR_DATA);
     
     // Strobe
-    XPLMRegisterDataAccessor("rsbn/strobe",
+    rsbnDatarefs.push_back(XPLMRegisterDataAccessor("rsbn/strobe",
             xplmType_Int,                                  // The types we support
             TRUE,                                          // Writable
             getStrobe, setStrobe,                          // Integer accessors
@@ -241,10 +242,10 @@ PLUGIN_API int XPluginStart(char *outName, char *outSig, char *outDesc)
             NULL, NULL,                                    // Int array accessors
             NULL, NULL,                                    // Float array accessors
             NULL, NULL,                                    // Raw data accessors
-            NULL, NULL);                                   // Refcons not used
+            NULL, NULL));                                   // Refcons not used
     
     // Nul
-    XPLMRegisterDataAccessor("rsbn/nul",
+    rsbnDatarefs.push_back(XPLMRegisterDataAccessor("rsbn/nul",
             xplmType_Int,                                  // The types we support
             TRUE,                                             // Writable
             getNul, setNul,                                // Integer accessors
@@ -253,10 +254,10 @@ PLUGIN_API int XPluginStart(char *outName, char *outSig, char *outDesc)
             NULL, NULL,                                    // Int array accessors
             NULL, NULL,                                    // Float array accessors
             NULL, NULL,                                    // Raw data accessors
-            NULL, NULL);                                   // Refcons not used
+            NULL, NULL));                                   // Refcons not used
                                         
     // Dataref for distance, wired to a callback on the database
-    XPLMRegisterDataAccessor("rsbn/distance",
+    rsbnDatarefs.push_back(XPLMRegisterDataAccessor("rsbn/distance",
             xplmType_Float,                                // The types we support
             FALSE,                                             // Writable
             NULL, NULL,                                 // Integer accessors
@@ -265,10 +266,10 @@ PLUGIN_API int XPluginStart(char *outName, char *outSig, char *outDesc)
             NULL, NULL,                                    // Int array accessors
             NULL, NULL,                                    // Float array accessors
             NULL, NULL,                                    // Raw data accessors
-            NULL, NULL);                                   // Refcons not used
+            NULL, NULL));                                   // Refcons not used
 
     // Dataref for bearing, wired to a callback on the database
-    XPLMRegisterDataAccessor("rsbn/bearing",
+    rsbnDatarefs.push_back(XPLMRegisterDataAccessor("rsbn/bearing",
             xplmType_Float,                                // The types we support
             FALSE,                                             // Writable
             NULL, NULL,                              // Integer accessors
@@ -277,10 +278,10 @@ PLUGIN_API int XPluginStart(char *outName, char *outSig, char *outDesc)
             NULL, NULL,                                    // Int array accessors
             NULL, NULL,                                    // Float array accessors
             NULL, NULL,                                    // Raw data accessors
-            NULL, NULL);                                   // Refcons not used
+            NULL, NULL));                                   // Refcons not used
 
     // Dataref for bearing TO, wired to a callback on the database
-    XPLMRegisterDataAccessor("rsbn/bearing_to",
+    rsbnDatarefs.push_back(XPLMRegisterDataAccessor("rsbn/bearing_to",
             xplmType_Float,                                // The types we support
             FALSE,                                             // Writable
             NULL, NULL,                              // Integer accessors
@@ -289,10 +290,10 @@ PLUGIN_API int XPluginStart(char *outName, char *outSig, char *outDesc)
             NULL, NULL,                                    // Int array accessors
             NULL, NULL,                                    // Float array accessors
             NULL, NULL,                                    // Raw data accessors
-            NULL, NULL);                                   // Refcons not used
+            NULL, NULL));                                   // Refcons not used
 
     // Dataref for bearing TO, wired to a callback on the database
-    XPLMRegisterDataAccessor("rsbn/bearing_to_mag",
+    rsbnDatarefs.push_back(XPLMRegisterDataAccessor("rsbn/bearing_to_mag",
             xplmType_Float,                                // The types we support
             FALSE,                                             // Writable
             NULL, NULL,                              // Integer accessors
@@ -301,10 +302,10 @@ PLUGIN_API int XPluginStart(char *outName, char *outSig, char *outDesc)
             NULL, NULL,                                    // Int array accessors
             NULL, NULL,                                    // Float array accessors
             NULL, NULL,                                    // Raw data accessors
-            NULL, NULL);                                   // Refcons not used
+            NULL, NULL));                                   // Refcons not used
     
     // Will contain 1 if the RSBN beacon is being overflown (is within the blind mushroom of non-reception)
-    XPLMRegisterDataAccessor("rsbn/overflight",
+    rsbnDatarefs.push_back(XPLMRegisterDataAccessor("rsbn/overflight",
             xplmType_Int,                                // The types we support
             FALSE,                                             // Writable
             getOverflight, NULL,                              // Integer accessors
@@ -313,10 +314,10 @@ PLUGIN_API int XPluginStart(char *outName, char *outSig, char *outDesc)
             NULL, NULL,                                    // Int array accessors
             NULL, NULL,                                    // Float array accessors
             NULL, NULL,                                    // Raw data accessors
-            NULL, NULL);                                   // Refcons not used
+            NULL, NULL));                                   // Refcons not used
     
     // Will contain 1 if the RSBN beacon set on channel is being received
-    XPLMRegisterDataAccessor("rsbn/receiving",
+    rsbnDatarefs.push_back(XPLMRegisterDataAccessor("rsbn/receiving",
             xplmType_Int,           // The types we support
             FALSE,                  // Writable
             getReceiving, NULL,     // Integer accessors
@@ -325,10 +326,10 @@ PLUGIN_API int XPluginStart(char *outName, char *outSig, char *outDesc)
             NULL, NULL,             // Int array accessors
             NULL, NULL,             // Float array accessors
             NULL, NULL,             // Raw data accessors
-            NULL, NULL);            // Refcons not used
+            NULL, NULL));            // Refcons not used
     
     // Will contain the latitude of the current beacon
-    XPLMRegisterDataAccessor("rsbn/beacon_lat",
+    rsbnDatarefs.push_back(XPLMRegisterDataAccessor("rsbn/beacon_lat",
             xplmType_Float,                                // The types we support
             FALSE,                                             // Writable
             NULL, NULL,                              // Integer accessors
@@ -337,10 +338,10 @@ PLUGIN_API int XPluginStart(char *outName, char *outSig, char *outDesc)
             NULL, NULL,                                    // Int array accessors
             NULL, NULL,                                    // Float array accessors
             NULL, NULL,                                    // Raw data accessors
-            NULL, NULL);
+            NULL, NULL));
     
     // Will contain the latitude of the current beacon
-    XPLMRegisterDataAccessor("rsbn/beacon_lon",
+    rsbnDatarefs.push_back(XPLMRegisterDataAccessor("rsbn/beacon_lon",
             xplmType_Float,                                // The types we support
             FALSE,                                             // Writable
             NULL, NULL,                              // Integer accessors
@@ -349,7 +350,7 @@ PLUGIN_API int XPluginStart(char *outName, char *outSig, char *outDesc)
             NULL, NULL,                                    // Int array accessors
             NULL, NULL,                                    // Float array accessors
             NULL, NULL,                                    // Raw data accessors
-            NULL, NULL);
+            NULL, NULL));
     
     // Assign the gateway objects
     proxy.db = &rsbn;   
@@ -366,6 +367,12 @@ PLUGIN_API int XPluginStart(char *outName, char *outSig, char *outDesc)
 PLUGIN_API void XPluginStop(void)
 {
     XPLMDestroyWindow(gWindow);
+    XPLMUnregisterFlightLoopCallback(updateRsbn, NULL);
+    for (vector<XPLMDataRef>::iterator cRef = rsbnDatarefs.begin(); cRef != rsbnDatarefs.end(); ++cRef) {
+        XPLMUnregisterDataAccessor((*cRef));
+    }
+    rsbnDatarefs.clear();
+    rsbn.clear();
 }
 
 
