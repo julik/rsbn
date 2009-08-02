@@ -19,7 +19,7 @@ public:
     Beacon();
     
     // Construct from a line
-    Beacon(char *line);
+    Beacon(const char *line);
     
     // Get bearing FROM the beacon TO the aircraft, at the beacon's position in true degrees
     double bearingToAcf(double acfLat, double acfLon);
