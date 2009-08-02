@@ -27,7 +27,7 @@ std::string carbonPathToPosixPath(const std::string &carbonPath)
 
 // Get either a POSIX or a Windows path to the datafile having this specific name, relative to the
 // plugin installation directory
-void detectDatabasePath(char *dataPath, char *datafileName)
+void detectDatabasePath(char *dataPath, const char *datafileName)
 {
     char myPath[1024];
     XPLMGetPluginInfo(XPLMGetMyID(), NULL, myPath, NULL, NULL);
