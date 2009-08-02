@@ -97,15 +97,11 @@ static int infoWindowCB(XPWidgetMessage message, XPWidgetID widget,
     return 0;
 }
 
-static void drawDebugInfo(XPWidgetID intoWindow, int x, int y)
+static vector<string> pluginInfo()
 {
-    int lineLen = 100;
-    
-    int atLeft = x + 10;
-    int atRight = x + lineLen;
-    int atTop = y;
     vector<string> infoLines;
     
+    int lineLen = 100;
     char c_info[lineLen];
     strcpy(c_info, PLUGIN_VERSION);
     
@@ -155,8 +151,16 @@ static void drawDebugInfo(XPWidgetID intoWindow, int x, int y)
 	char c_lon[lineLen];
 	snprintf(c_lon, lineLen, "rsbn/beacon_lon (deg) %.2f", getBeaconLon(NULL));
     infoLines.push_back(string(c_lon));
-
+    return infoLines;
+}
+static void drawDebugInfo(XPWidgetID intoWindow, int x, int y)
+{   
+    int atLeft = x + 10;
+    int atRight = x + 100;
+    int atTop = y;
     int endAt;
+    vector<string> infoLines = pluginInfo();
+    
     for (vector<string>::iterator curItem = infoLines.begin(); curItem != infoLines.end(); ++curItem) {
         string line = (*curItem);
         atTop-= 15; endAt = atTop - 10;

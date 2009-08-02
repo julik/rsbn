@@ -58,8 +58,9 @@ void Database::setPositionAndFindNearest(double acfLat, double acfLon, double ac
         return;
     }
     
+    // I know this is a bubble sort but with 3-4 choices and the optimization above this is tolerable.
+    // Finds the beacon with the shortest distance to the aircraft
     tunedBc = shortList.front();
-    
     for (vector<Beacon>::iterator curItem = shortList.begin(); curItem != shortList.end(); ++curItem) {
         if(tunedBc.distanceFrom(curLat, curLon, curElev) > (*curItem).distanceFrom(curLat, curLon, curElev)) {
             tunedBc = (*curItem);

@@ -29,6 +29,7 @@ $(TARGET): $(OBJECTS)
 
 clean:
 	rm -f $(OBJECTS) $(TARGET)
+	rm -r dist
 
 install: $(TARGET)
 	cp -f $(TARGET) $(PLUGINS)
@@ -36,4 +37,8 @@ install: $(TARGET)
 	cp -f data/ussr.dat $(PLUGINS)/data/
 	cp -f data/cis.dat $(PLUGINS)/data/
 
+dist: $(TARGET)
+	mkdir -p dist
+	mv -f $(TARGET) dist/
+	ruby write_docs.rb	
 
