@@ -57,7 +57,17 @@ switch between the datasets using the plugin menu.
 
 The plugin does not change or affect scenery in any way - you can use any scenery you like.
 
-##  LICENSE
+## DEVELOPMENT AND BUILDING
+
+If you want to contribute to the plugin, you can always check out the latest source at
+
+	http://github.com/julik/rsbn/tree/master
+
+To build on Mac, you will need XCode tools and the 10.4 SDK in
+addition to the X-Plane SDK. On Windows, use the latest version of MiniGW and it's associated compilers.
+On Linux it's enough to have the SDK installed.
+
+## LICENSE
 
 (The MIT License)
 

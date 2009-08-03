@@ -22,9 +22,9 @@ void Database::loadDataFrom(char path[1024])
     if (!inFile) return;
     
     char line[256];
-    db.clear();
+    clear();
     while (inFile.getline(line, sizeof(line)))  {
-        db.push_back(Beacon(line));
+        push_back(Beacon(line));
     }
     inFile.close();
 }
@@ -46,8 +46,8 @@ void Database::findNearest()
         tunedBc.isInRangeOf(curLat, curLon, curElev)) return;
     
     vector<Beacon> shortList;
-    vector<Beacon>::iterator it =  db.begin();
-    while( it != db.end() ) {
+    vector<Beacon>::iterator it =  begin();
+    while( it != end() ) {
         Beacon bc = *it;
         if( bc.hasCode(selStrobe, selNul) && bc.isInRangeOf(curLat, curLon, curElev)) {
             shortList.push_back(bc);
@@ -70,16 +70,6 @@ void Database::findNearest()
         }
     }
     isTuned = true;
-}
-
-int Database::size()
-{
-    return db.size();
-}
-
-void Database::clear()
-{
-    db.clear();
 }
 
 float Database::getDistance()

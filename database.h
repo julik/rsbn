@@ -3,12 +3,9 @@
 
 using namespace std;
 
-class   Database
+class Database : public vector<Beacon>
 {
 public:
-    
-    // Injected from the datafile
-    vector<Beacon> db;
     
     // Selected strobe and nul, arrive from the dataref via callback
     int selStrobe;
@@ -17,10 +14,9 @@ public:
     
     Beacon tunedBc;
     
-    // Boilerplate constructor
-    Database();
-
     bool isReceiving();
+    
+    Database();
     
     // Make a database of beacons reading them from file at path. Beacons will be
     // placed in the db vector
@@ -37,10 +33,7 @@ public:
 
     // Scan the beacons and select a beacon that works
     void findNearest();
-    
-    // How many beacons are in the database?
-    int size();
-    
+
     // Returns distance to aircraft in kilometers
     float getDistance();
     
@@ -55,9 +48,7 @@ public:
     
     // Returns TRUE if the linear distance from the aircraft is less than the aircraft's altitude + 2 km 
     bool isOverflyingNow();
-    
-    // Clears the embedded vector
-    void clear();
+
 private:
     
     double curX, curY, curZ, curLat, curLon, curElev;

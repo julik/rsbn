@@ -201,7 +201,7 @@ void rsbn_selectDataset(void* menuRef, void* selection)
     
     rsbn.loadDataFrom(dataPath);
     char msg[256];
-    sprintf(msg, "RSBN: loaded %d beacons\n", rsbn.size());
+    sprintf(msg, "RSBN: loaded %i beacons\n", (int)rsbn.size());
     XPLMDebugString(msg);
 }
 
@@ -258,7 +258,7 @@ PLUGIN_API int XPluginStart(char *outName, char *outSig, char *outDesc)
                                         
     // Dataref for distance, wired to a callback on the database
     rsbnDatarefs.push_back(XPLMRegisterDataAccessor("rsbn/distance",
-            xplmType_Float,                                // The types we support
+            xplmType_Double,                                // The types we support
             FALSE,                                             // Writable
             NULL, NULL,                                 // Integer accessors
             NULL, NULL,                                    // Float accessors
@@ -270,7 +270,7 @@ PLUGIN_API int XPluginStart(char *outName, char *outSig, char *outDesc)
 
     // Dataref for bearing, wired to a callback on the database
     rsbnDatarefs.push_back(XPLMRegisterDataAccessor("rsbn/bearing",
-            xplmType_Float,                                // The types we support
+            xplmType_Double,                                // The types we support
             FALSE,                                             // Writable
             NULL, NULL,                              // Integer accessors
             NULL, NULL,                                    // Float accessors
@@ -282,7 +282,7 @@ PLUGIN_API int XPluginStart(char *outName, char *outSig, char *outDesc)
 
     // Dataref for bearing TO, wired to a callback on the database
     rsbnDatarefs.push_back(XPLMRegisterDataAccessor("rsbn/bearing_to",
-            xplmType_Float,                                // The types we support
+            xplmType_Double,                                // The types we support
             FALSE,                                             // Writable
             NULL, NULL,                              // Integer accessors
             NULL, NULL,                                    // Float accessors
@@ -294,7 +294,7 @@ PLUGIN_API int XPluginStart(char *outName, char *outSig, char *outDesc)
 
     // Dataref for bearing TO, wired to a callback on the database
     rsbnDatarefs.push_back(XPLMRegisterDataAccessor("rsbn/bearing_to_mag",
-            xplmType_Float,                                // The types we support
+            xplmType_Double,                                // The types we support
             FALSE,                                             // Writable
             NULL, NULL,                              // Integer accessors
             NULL, NULL,                                    // Float accessors
@@ -330,7 +330,7 @@ PLUGIN_API int XPluginStart(char *outName, char *outSig, char *outDesc)
     
     // Will contain the latitude of the current beacon
     rsbnDatarefs.push_back(XPLMRegisterDataAccessor("rsbn/beacon_lat",
-            xplmType_Float,                                // The types we support
+            xplmType_Double,                                // The types we support
             FALSE,                                             // Writable
             NULL, NULL,                              // Integer accessors
             NULL, NULL,                                    // Float accessors
@@ -342,7 +342,7 @@ PLUGIN_API int XPluginStart(char *outName, char *outSig, char *outDesc)
     
     // Will contain the latitude of the current beacon
     rsbnDatarefs.push_back(XPLMRegisterDataAccessor("rsbn/beacon_lon",
-            xplmType_Float,                                // The types we support
+            xplmType_Double,                                // The types we support
             FALSE,                                             // Writable
             NULL, NULL,                              // Integer accessors
             NULL, NULL,                                    // Float accessors
