@@ -34,11 +34,11 @@ static void setNul(void* inRefcon, int newNul) {
     rsbn.selNul = clamp(0, newNul, 9);
 }
 
-static float getDist(void* inRefcon) {
+static double getDist(void* inRefcon) {
     return rsbn.getDistance();
 }
 
-static float getBearing(void* inRefcon) {
+static double getBearing(void* inRefcon) {
     return rsbn.getBearing();
 }
 
@@ -56,22 +56,22 @@ static float updateRsbn(float elapsedSinceLastCall, float elapsedTimeSinceLastFl
     return UPDATE_INTERVAL;
 }
 
-static float getBearingTo(void *inRefcon)
+static double getBearingTo(void *inRefcon)
 {
     return rsbn.getInverseBearing();
 }
 
-static float getBearingToMag(void *inRefcon)
+static double getBearingToMag(void *inRefcon)
 {
     return rsbn.getInverseBearing() + XPLMGetDataf(proxy.magVarRef);
 }
 
-static float getBeaconLat(void *inRefcon)
+static double getBeaconLat(void *inRefcon)
 {
     return (rsbn.isTuned) ? rsbn.tunedBc.lat : 0;
 }
 
-static float getBeaconLon(void *inRefcon)
+static double getBeaconLon(void *inRefcon)
 {
     return (rsbn.isTuned) ? rsbn.tunedBc.lon : 0;
 }
@@ -261,8 +261,8 @@ PLUGIN_API int XPluginStart(char *outName, char *outSig, char *outDesc)
             xplmType_Float,                                // The types we support
             FALSE,                                             // Writable
             NULL, NULL,                                 // Integer accessors
-            getDist, NULL,                                    // Float accessors
-            NULL, NULL,                                    // Doubles accessors
+            NULL, NULL,                                    // Float accessors
+            getDist, NULL,                                    // Doubles accessors
             NULL, NULL,                                    // Int array accessors
             NULL, NULL,                                    // Float array accessors
             NULL, NULL,                                    // Raw data accessors
@@ -273,8 +273,8 @@ PLUGIN_API int XPluginStart(char *outName, char *outSig, char *outDesc)
             xplmType_Float,                                // The types we support
             FALSE,                                             // Writable
             NULL, NULL,                              // Integer accessors
-            getBearing, NULL,                                    // Float accessors
-            NULL, NULL,                                    // Doubles accessors
+            NULL, NULL,                                    // Float accessors
+            getBearing, NULL,                                    // Doubles accessors
             NULL, NULL,                                    // Int array accessors
             NULL, NULL,                                    // Float array accessors
             NULL, NULL,                                    // Raw data accessors
@@ -285,8 +285,8 @@ PLUGIN_API int XPluginStart(char *outName, char *outSig, char *outDesc)
             xplmType_Float,                                // The types we support
             FALSE,                                             // Writable
             NULL, NULL,                              // Integer accessors
-            getBearingTo, NULL,                                    // Float accessors
-            NULL, NULL,                                    // Doubles accessors
+            NULL, NULL,                                    // Float accessors
+            getBearingTo, NULL,                                    // Doubles accessors
             NULL, NULL,                                    // Int array accessors
             NULL, NULL,                                    // Float array accessors
             NULL, NULL,                                    // Raw data accessors
@@ -297,8 +297,8 @@ PLUGIN_API int XPluginStart(char *outName, char *outSig, char *outDesc)
             xplmType_Float,                                // The types we support
             FALSE,                                             // Writable
             NULL, NULL,                              // Integer accessors
-            getBearingToMag, NULL,                                    // Float accessors
-            NULL, NULL,                                    // Doubles accessors
+            NULL, NULL,                                    // Float accessors
+            getBearingToMag, NULL,                                    // Doubles accessors
             NULL, NULL,                                    // Int array accessors
             NULL, NULL,                                    // Float array accessors
             NULL, NULL,                                    // Raw data accessors
@@ -333,8 +333,8 @@ PLUGIN_API int XPluginStart(char *outName, char *outSig, char *outDesc)
             xplmType_Float,                                // The types we support
             FALSE,                                             // Writable
             NULL, NULL,                              // Integer accessors
-            getBeaconLat, NULL,                                    // Float accessors
-            NULL, NULL,                                    // Doubles accessors
+            NULL, NULL,                                    // Float accessors
+            getBeaconLat, NULL,                                    // Doubles accessors
             NULL, NULL,                                    // Int array accessors
             NULL, NULL,                                    // Float array accessors
             NULL, NULL,                                    // Raw data accessors
@@ -345,8 +345,8 @@ PLUGIN_API int XPluginStart(char *outName, char *outSig, char *outDesc)
             xplmType_Float,                                // The types we support
             FALSE,                                             // Writable
             NULL, NULL,                              // Integer accessors
-            getBeaconLon, NULL,                                    // Float accessors
-            NULL, NULL,                                    // Doubles accessors
+            NULL, NULL,                                    // Float accessors
+            getBeaconLon, NULL,                                    // Doubles accessors
             NULL, NULL,                                    // Int array accessors
             NULL, NULL,                                    // Float array accessors
             NULL, NULL,                                    // Raw data accessors
