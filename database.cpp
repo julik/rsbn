@@ -4,14 +4,12 @@ using namespace std;
 Database::Database() {
     selStrobe = 1;
     selNul = 0;
-    isTuned = FALSE;
 }
 
 Database::Database(char path[1024])
 {
     selStrobe = 1;
     selNul = 0;
-    tunedBc = NULL;
     loadDataFrom(path);
 }
 
@@ -27,6 +25,9 @@ void Database::loadDataFrom(char path[1024])
         push_back(Beacon(line));
     }
     inFile.close();
+    
+    tunedBc = NULL;
+    isTuned = FALSE;
 }
 
 void Database::setPosition(double acfLat, double acfLon, double acfElev)
