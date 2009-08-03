@@ -19,7 +19,7 @@ public:
     
     Gate();
     
-    void update();
+    void update(int counter);
         
     void attachDatarefs();
     

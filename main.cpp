@@ -3,7 +3,7 @@
 #define USSR_DATA (void*)1
 #define CIS_DATA (void*)2
 #define ABOUT_SW (void*)3
-#define UPDATE_INTERVAL -3 // every third frame
+#define UPDATE_INTERVAL -1
 
 #include "libs.h"
 #include "utils.h"
@@ -52,7 +52,7 @@ static int getReceiving(void* inRefcon) {
 
 static float updateRsbn(float elapsedSinceLastCall, float elapsedTimeSinceLastFlightLoop,  int counter, void *refcon)
 {
-    if(plugIsEnabled) proxy.update();
+    if(plugIsEnabled) proxy.update(counter);
     return UPDATE_INTERVAL;
 }
 

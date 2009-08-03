@@ -1,18 +1,21 @@
 #include "gate.h"
 #include "libs.h"
-
+#define CYCLES_BEFORE_LOOKUP 10
 Gate::Gate()
 {
     db = NULL;
 }
 
-void Gate::update()
+void Gate::update(int counter)
 {
    if (db == NULL) return;
-    
-   (*db).setPositionAndFindNearest(
+   
+   (*db).setPosition(
        XPLMGetDatad(acfLatRef), XPLMGetDatad(acfLonRef), XPLMGetDatad(acfAltRef)
     );
+    
+   // Optimize - only do lookups every Nth frame since continuous reception is more important
+   if (0 == (counter % CYCLES_BEFORE_LOOKUP)) (*db).findNearest();
 }
 
 void Gate::attachDatarefs()

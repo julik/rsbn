@@ -29,24 +29,27 @@ void Database::loadDataFrom(char path[1024])
     inFile.close();
 }
 
-void Database::setPositionAndFindNearest(double acfLat, double acfLon, double acfElev)
+void Database::setPosition(double acfLat, double acfLon, double acfElev)
 {
     curLat = acfLat;
     curLon = acfLon;
     curElev = acfElev;
-    
+}
+
+void Database::findNearest()
+{
     // Optimize - if the tunedBc beacon is already found and preselected keep it,
     // don't alloc any iterators and only check for distance. If it's out of range it's
     // time to search again
     if (isTuned &&
         tunedBc.hasCode(selStrobe, selNul) &&
-        tunedBc.isInRangeOf(acfLat, acfLon, acfElev)) return;
+        tunedBc.isInRangeOf(curLat, curLon, curElev)) return;
     
     vector<Beacon> shortList;
     vector<Beacon>::iterator it =  db.begin();
     while( it != db.end() ) {
         Beacon bc = *it;
-        if( bc.hasCode(selStrobe, selNul) && bc.isInRangeOf(acfLat, acfLon, acfElev)) {
+        if( bc.hasCode(selStrobe, selNul) && bc.isInRangeOf(curLat, curLon, curElev)) {
             shortList.push_back(bc);
         }
         it++;

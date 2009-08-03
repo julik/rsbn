@@ -32,8 +32,11 @@ public:
     // Find the closest beacon at these coordinates
     Beacon findClosestByChannel();
     
+    // Store acf position for immediate use
+    void setPosition(double acfLat, double acfLon, double acfElev);
+
     // Scan the beacons and select a beacon that works
-    void setPositionAndFindNearest(double acfLat, double acfLon, double acfElev);
+    void findNearest();
     
     // How many beacons are in the database?
     int size();
