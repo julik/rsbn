@@ -41,9 +41,8 @@ double gcDistance(double lat1, double lon1, double lat2, double lon2)
     lon2 = deg2rad(lon2);
     
     double deltaL = lon1 - lon2; // ???
-    double dist = sin(lat1) * sin(lat2) + cos(lat1) * cos(lat2) * cos(deltaL);
-    dist = acos(dist);
-    return dist * R_KAVRAISKOGO;
+    double cosDist = sin(lat1) * sin(lat2) + cos(lat1) * cos(lat2) * cos(deltaL);
+    return acos(cosDist) * R_KAVRAISKOGO;
 }
 
 // Simplified great circle bearing - http://www.dtcenter.org/met/users/docs/write_ups/gc_simple.pdf.
