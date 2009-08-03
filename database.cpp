@@ -25,8 +25,6 @@ void Database::loadDataFrom(char path[1024])
         push_back(Beacon(line));
     }
     inFile.close();
-    
-    tunedBc = NULL;
     isTuned = FALSE;
 }
 
