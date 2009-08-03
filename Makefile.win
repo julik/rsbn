@@ -1,0 +1,26 @@
+SDK=C:\XPSDK
+
+TARGET=win.xpl
+HEADERS=$(wildcard *.h)
+SOURCES=$(wildcard *.cpp)
+OBJECTS=$(SOURCES:.cpp=.o)
+CXX=mingw32-g++
+DEFS= -DLIN=1 -fPIC -m32 -fno-stack-protector -DXPLM200 -ggdb
+CXXFLAGS+=-Wall -I$(SDK)/CHeaders/XPLM -I$(SDK)/CHeaders/Widgets -DAPL=0 -DIBM=1 -DXPLM200 
+LNFLAGS=-L$(SDK)/Libraries/Win -Lc:/mingw/sdk/lib
+LIBS=-lxplm -lxpwidgets -lm -lOpenGL32
+
+all: $(TARGET)
+
+.cpp.o:
+	$(CXX) $(CXXFLAGS) -c $<
+	
+$(TARGET): $(OBJECTS)
+	dllwrap --dllname=$(TARGET) --driver-name=$(CXX) $(OBJECTS) $(LNFLAGS) $(LIBS)
+	strip --strip-all $(TARGET)
+
+clean:
+	del $(OBJECTS) $(TARGET)
+
+install: $(TARGET)
+	cp -f $(TARGET) $(PLUGINS)
