@@ -24,8 +24,8 @@ static bool plugIsEnabled = TRUE;
 
 static double getBearingToMag(void *inRefcon)
 {
-    Database* d = reinterpret_cast<Database*>(inRefcon);
-    return (*d).getInverseBearing() + XPLMGetDataf(proxy.magVarRef);
+    // jajaja Database* d = reinterpret_cast<Database*>(inRefcon);
+    return rsbn.getInverseBearing() + XPLMGetDataf(proxy.magVarRef);
 }
 
 static float updateRsbn(float elapsedSinceLastCall, float elapsedTimeSinceLastFlightLoop,  int counter, void *refcon)
