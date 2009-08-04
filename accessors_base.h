@@ -1,60 +1,55 @@
 // Data access callbacks. All X-Plane callbacks for data sets/gets need a void refcon pointer at the start
-static int getStrobe(void *inRefcon) {
-    Database* d = reinterpret_cast<Database*>(inRefcon);
-    return (*d).selStrobe;
+static int getStrobe(void *inRefcon) 
+{
+    return rsbn.selStrobe;
 }
 
-static void setStrobe(void *inRefcon, int newStrobe) {
-    Database* d = reinterpret_cast<Database*>(inRefcon);
-    (*d).selStrobe = clamp(0, newStrobe, 4);
+static void setStrobe(void *inRefcon, int newStrobe) 
+{
+    rsbn.selStrobe = clamp(0, newStrobe, 4);
 }
 
-static int getNul(void* inRefcon) {
-    Database* d = reinterpret_cast<Database*>(inRefcon);
-    return (*d).selNul;
+static int getNul(void* inRefcon) 
+{
+    return rsbn.selNul;
 }
 
-static void setNul(void* inRefcon, int newNul) {
-    Database* d = reinterpret_cast<Database*>(inRefcon);
-    (*d).selNul = clamp(0, newNul, 9);
+static void setNul(void* inRefcon, int newNul) 
+{
+    rsbn.selNul = clamp(0, newNul, 9);
 }
 
-static double getDist(void* inRefcon) {
-    Database* d = reinterpret_cast<Database*>(inRefcon);
-    return (*d).getDistance();
+static double getDist(void* inRefcon) 
+{
+    return rsbn.getDistance();
 }
 
-static double getBearing(void* inRefcon) {
-    Database* d = reinterpret_cast<Database*>(inRefcon);
-    return (*d).getBearing();
+static double getBearing(void* inRefcon) 
+{
+    return rsbn.getBearing();
 }
 
-static int getOverflight(void* inRefcon) {
-    Database* d = reinterpret_cast<Database*>(inRefcon);
-    return (*d).isOverflyingNow();
+static int getOverflight(void* inRefcon) 
+{
+    return rsbn.isOverflyingNow();
 }
 
-static int getReceiving(void* inRefcon) {
-    Database* d = reinterpret_cast<Database*>(inRefcon);
-    return (*d).isReceiving();
+static int getReceiving(void* inRefcon) 
+{
+    return rsbn.isReceiving();
 }
 
 static double getBearingTo(void *inRefcon)
 {
-    Database* d = reinterpret_cast<Database*>(inRefcon);
-    return (*d).getInverseBearing();
+    return rsbn.getInverseBearing();
 }
-
-static double getBearingToMag(void *inRefcon);
 
 static double getBeaconLat(void *inRefcon)
 {
-    Database d = (*(reinterpret_cast<Database*>(inRefcon)));
-    return (d.isTuned) ? d.tunedBc.lat : 0;
+    return (rsbn.isTuned) ? rsbn.tunedBc.lat : 0;
 }
 
 static double getBeaconLon(void *inRefcon)
 {
-    Database d = (*(reinterpret_cast<Database*>(inRefcon)));
-    return (d.isTuned) ? d.tunedBc.lon : 0;
+    return (rsbn.isTuned) ? rsbn.tunedBc.lon : 0;
 }

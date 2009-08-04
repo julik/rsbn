@@ -1,3 +1,10 @@
+float inline normalizeAngle(float angle)
+{
+    // Get rid of overruns
+    float truncated = fmod(angle, 360);
+    return (truncated < 0) ? (360 - truncated) : truncated;
+}
+
 static int getNavMode(void* inRefcon)
 {
     Navigator n = *(reinterpret_cast<Navigator*>(inRefcon));
@@ -19,7 +26,7 @@ static float getAzimuth(void* inRefcon)
 static void setAzimuth(void* inRefcon, float a)
 {
     Navigator n = *(reinterpret_cast<Navigator*>(inRefcon));
-    n.selAzimuth = a;
+    n.selAzimuth = normalizeAngle(a);
 }
 
 static float getOrbita(void* inRefcon)
@@ -43,7 +50,7 @@ static float getTargetAngle(void* inRefcon)
 static void setTargetAngle(void* inRefcon, float a)
 {
     Navigator n = *(reinterpret_cast<Navigator*>(inRefcon));
-    n.selTargetAngle = a;
+    n.selTargetAngle = normalizeAngle(a);
 }
 
 static float getTargetDist(void* inRefcon)
@@ -67,5 +74,11 @@ static float getZpu(void* inRefcon)
 static void setZpu(void* inRefcon, float a)
 {
     Navigator n = *(reinterpret_cast<Navigator*>(inRefcon));
-    n.selTrack = a;
+    n.selTrack = normalizeAngle(a);
+}
+
+static float getCrosstrack(void* inRefcon)
+{
+    Navigator n = *(reinterpret_cast<Navigator*>(inRefcon));
+    return n.outXtk;
 }

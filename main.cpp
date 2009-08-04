@@ -9,8 +9,6 @@
 #include "utils.h"
 #include "gate.h"
 #include "navigator.h"
-#include "accessors_base.h"
-#include "accessors_nav.h"
 
 static Database rsbn;
 static Navigator nav;
@@ -20,6 +18,9 @@ static XPLMMenuID rsbnMenu;
 static int rsbnMenuItem = -1;
 static XPWidgetID gWindow = NULL;
 static bool plugIsEnabled = TRUE;
+
+#include "accessors_base.h"
+#include "accessors_nav.h"
 
 static double getBearingToMag(void *inRefcon)
 {
@@ -373,6 +374,17 @@ PLUGIN_API int XPluginStart(char *outName, char *outSig, char *outDesc)
            NULL, NULL,                                    // Raw data accessors
            &nav, &nav));
     
+    // RSBN set navigation mode
+    rsbnDatarefs.push_back(XPLMRegisterDataAccessor("rsbn/nav/out/xtk",
+            xplmType_Float,                                // The types we support
+            FALSE,                                             // Writable
+            NULL, NULL,                              // Integer accessors
+            getCrosstrack, NULL,                                    // Float accessors
+            NULL, NULL,                                    // Doubles accessors
+            NULL, NULL,                                    // Int array accessors
+            NULL, NULL,                                    // Float array accessors
+            NULL, NULL,                                    // Raw data accessors
+            &nav, &nav));
     // Assign the gateway objects
     proxy.db = &rsbn;
     proxy.attachDatarefs();
