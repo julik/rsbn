@@ -17,38 +17,7 @@ static int rsbnMenuItem = -1;
 static XPWidgetID gWindow = NULL;
 static bool plugIsEnabled = TRUE;
 
-// Data access callbacks. All X-Plane callbacks for data sets/gets need a void refcon pointer at the start
-static int getStrobe(void* inRefcon) {
-    return rsbn.selStrobe;
-}
-
-static void setStrobe(void* inRefcon, int newStrobe) {
-    rsbn.selStrobe = clamp(0, newStrobe, 4);
-}
-
-static int getNul(void* inRefcon) {
-    return rsbn.selNul;
-}
-
-static void setNul(void* inRefcon, int newNul) {
-    rsbn.selNul = clamp(0, newNul, 9);
-}
-
-static double getDist(void* inRefcon) {
-    return rsbn.getDistance();
-}
-
-static double getBearing(void* inRefcon) {
-    return rsbn.getBearing();
-}
-
-static int getOverflight(void* inRefcon) {
-    return rsbn.isOverflyingNow();
-}
-
-static int getReceiving(void* inRefcon) {
-    return rsbn.isReceiving();
-}
+#include "accessors_base.h"
 
 static float updateRsbn(float elapsedSinceLastCall, float elapsedTimeSinceLastFlightLoop,  int counter, void *refcon)
 {
@@ -56,39 +25,8 @@ static float updateRsbn(float elapsedSinceLastCall, float elapsedTimeSinceLastFl
     return UPDATE_INTERVAL;
 }
 
-static double getBearingTo(void *inRefcon)
-{
-    return rsbn.getInverseBearing();
-}
-
-static double getBearingToMag(void *inRefcon)
-{
-    return rsbn.getInverseBearing() + XPLMGetDataf(proxy.magVarRef);
-}
-
-static double getBeaconLat(void *inRefcon)
-{
-    return (rsbn.isTuned) ? rsbn.tunedBc.lat : 0;
-}
-
-static double getBeaconLon(void *inRefcon)
-{
-    return (rsbn.isTuned) ? rsbn.tunedBc.lon : 0;
-}
-
-/*
-static int drawMapCB(XPLMDrawingPhase inPhase, int inIsBefore, void *inRefcon)
-{
-    if(inPhase != xplm_Phase_LocalMap3D) return 1;
-    
-    proxy.drawToMap();
-    return 1;
-}
-
- */
-
-static int infoWindowCB(XPWidgetMessage message, XPWidgetID widget,
-        long param1, long param2)
+static int infoWindowCB(XPWidgetMessage message, 
+    XPWidgetID widget, long param1, long param2)
 {
     if (message == xpMessage_CloseButtonPushed) {
         XPHideWidget(gWindow);
@@ -242,7 +180,7 @@ PLUGIN_API int XPluginStart(char *outName, char *outSig, char *outDesc)
             NULL, NULL,                                    // Int array accessors
             NULL, NULL,                                    // Float array accessors
             NULL, NULL,                                    // Raw data accessors
-            NULL, NULL));                                   // Refcons not used
+            &rsbn, &rsbn));                                   // Refcons not used
     
     // Nul
     rsbnDatarefs.push_back(XPLMRegisterDataAccessor("rsbn/nul",
@@ -254,7 +192,7 @@ PLUGIN_API int XPluginStart(char *outName, char *outSig, char *outDesc)
             NULL, NULL,                                    // Int array accessors
             NULL, NULL,                                    // Float array accessors
             NULL, NULL,                                    // Raw data accessors
-            NULL, NULL));                                   // Refcons not used
+            &rsbn, &rsbn));                                   // Refcons not used
                                         
     // Dataref for distance, wired to a callback on the database
     rsbnDatarefs.push_back(XPLMRegisterDataAccessor("rsbn/distance",
@@ -266,7 +204,7 @@ PLUGIN_API int XPluginStart(char *outName, char *outSig, char *outDesc)
             NULL, NULL,                                    // Int array accessors
             NULL, NULL,                                    // Float array accessors
             NULL, NULL,                                    // Raw data accessors
-            NULL, NULL));                                   // Refcons not used
+            &rsbn, NULL));                                   // Refcons not used
 
     // Dataref for bearing, wired to a callback on the database
     rsbnDatarefs.push_back(XPLMRegisterDataAccessor("rsbn/bearing",
@@ -278,7 +216,7 @@ PLUGIN_API int XPluginStart(char *outName, char *outSig, char *outDesc)
             NULL, NULL,                                    // Int array accessors
             NULL, NULL,                                    // Float array accessors
             NULL, NULL,                                    // Raw data accessors
-            NULL, NULL));                                   // Refcons not used
+            &rsbn, NULL));                                   // Refcons not used
 
     // Dataref for bearing TO, wired to a callback on the database
     rsbnDatarefs.push_back(XPLMRegisterDataAccessor("rsbn/bearing_to",
@@ -290,7 +228,7 @@ PLUGIN_API int XPluginStart(char *outName, char *outSig, char *outDesc)
             NULL, NULL,                                    // Int array accessors
             NULL, NULL,                                    // Float array accessors
             NULL, NULL,                                    // Raw data accessors
-            NULL, NULL));                                   // Refcons not used
+            &rsbn, NULL));                                   // Refcons not used
 
     // Dataref for bearing TO, wired to a callback on the database
     rsbnDatarefs.push_back(XPLMRegisterDataAccessor("rsbn/bearing_to_mag",
@@ -302,7 +240,7 @@ PLUGIN_API int XPluginStart(char *outName, char *outSig, char *outDesc)
             NULL, NULL,                                    // Int array accessors
             NULL, NULL,                                    // Float array accessors
             NULL, NULL,                                    // Raw data accessors
-            NULL, NULL));                                   // Refcons not used
+            &rsbn, NULL));                                   // Refcons not used
     
     // Will contain 1 if the RSBN beacon is being overflown (is within the blind mushroom of non-reception)
     rsbnDatarefs.push_back(XPLMRegisterDataAccessor("rsbn/overflight",
@@ -314,7 +252,7 @@ PLUGIN_API int XPluginStart(char *outName, char *outSig, char *outDesc)
             NULL, NULL,                                    // Int array accessors
             NULL, NULL,                                    // Float array accessors
             NULL, NULL,                                    // Raw data accessors
-            NULL, NULL));                                   // Refcons not used
+            &rsbn, NULL));                                   // Refcons not used
     
     // Will contain 1 if the RSBN beacon set on channel is being received
     rsbnDatarefs.push_back(XPLMRegisterDataAccessor("rsbn/receiving",
@@ -326,7 +264,7 @@ PLUGIN_API int XPluginStart(char *outName, char *outSig, char *outDesc)
             NULL, NULL,             // Int array accessors
             NULL, NULL,             // Float array accessors
             NULL, NULL,             // Raw data accessors
-            NULL, NULL));            // Refcons not used
+            &rsbn, NULL));            // Refcons not used
     
     // Will contain the latitude of the current beacon
     rsbnDatarefs.push_back(XPLMRegisterDataAccessor("rsbn/beacon_lat",
@@ -338,7 +276,7 @@ PLUGIN_API int XPluginStart(char *outName, char *outSig, char *outDesc)
             NULL, NULL,                                    // Int array accessors
             NULL, NULL,                                    // Float array accessors
             NULL, NULL,                                    // Raw data accessors
-            NULL, NULL));
+            &rsbn, NULL));
     
     // Will contain the latitude of the current beacon
     rsbnDatarefs.push_back(XPLMRegisterDataAccessor("rsbn/beacon_lon",
@@ -350,7 +288,7 @@ PLUGIN_API int XPluginStart(char *outName, char *outSig, char *outDesc)
             NULL, NULL,                                    // Int array accessors
             NULL, NULL,                                    // Float array accessors
             NULL, NULL,                                    // Raw data accessors
-            NULL, NULL));
+            &rsbn, NULL));
     
     // Assign the gateway objects
     proxy.db = &rsbn;   

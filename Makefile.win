@@ -5,7 +5,7 @@ HEADERS=$(wildcard *.h)
 SOURCES=$(wildcard *.cpp)
 OBJECTS=$(SOURCES:.cpp=.o)
 CXX=mingw32-g++
-DEFS= -DLIN=1 -fPIC -m32 -fno-stack-protector -DXPLM200 -ggdb
+DEFS= -DIBM=1 -DAPL=0 -fPIC -m32 -fno-stack-protector -DXPLM200 -ggdb
 CXXFLAGS+=-Wall -I$(SDK)/CHeaders/XPLM -I$(SDK)/CHeaders/Widgets -DAPL=0 -DIBM=1 -DXPLM200 
 LNFLAGS=-shared -L$(SDK)/Libraries/Win -Lc:/mingw/sdk/lib
 LIBS=-lxplm -lxpwidgets -lm -lOpenGL32

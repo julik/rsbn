@@ -29,7 +29,6 @@ $(TARGET): $(OBJECTS)
 
 clean:
 	rm -f $(OBJECTS) $(TARGET)
-	rm -r dist
 
 install: $(TARGET)
 	cp -f $(TARGET) $(PLUGINS)
