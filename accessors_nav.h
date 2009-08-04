@@ -7,78 +7,65 @@ float inline normalizeAngle(float angle)
 
 static int getNavMode(void* inRefcon)
 {
-    Navigator n = *(reinterpret_cast<Navigator*>(inRefcon));
-    return n.selMode;
+    return nav.selMode;
 }
 
 static void setNavMode(void* inRefcon, int newMode)
 {
-    Navigator n = *(reinterpret_cast<Navigator*>(inRefcon));
-    n.selMode = newMode;
+    nav.selMode = newMode;
 }
 
 static float getAzimuth(void* inRefcon)
 {
-    Navigator n = *(reinterpret_cast<Navigator*>(inRefcon));
-    return n.selAzimuth;
+    return nav.selAzimuth;
 }
 
 static void setAzimuth(void* inRefcon, float a)
 {
-    Navigator n = *(reinterpret_cast<Navigator*>(inRefcon));
-    n.selAzimuth = normalizeAngle(a);
+    nav.selAzimuth = normalizeAngle(a);
 }
 
 static float getOrbita(void* inRefcon)
 {
-    Navigator n = *(reinterpret_cast<Navigator*>(inRefcon));
-    return n.selOrbita;
+    return nav.selOrbita;
 }
 
 static void setOrbita(void* inRefcon, float a)
 {
-    Navigator n = *(reinterpret_cast<Navigator*>(inRefcon));
-    n.selOrbita = a;
+    nav.selOrbita = a;
 }
 
 static float getTargetAngle(void* inRefcon)
 {
-    Navigator n = *(reinterpret_cast<Navigator*>(inRefcon));
-    return n.selTargetAngle;
+    return nav.selTargetAngle;
 }
 
 static void setTargetAngle(void* inRefcon, float a)
 {
-    Navigator n = *(reinterpret_cast<Navigator*>(inRefcon));
-    n.selTargetAngle = normalizeAngle(a);
+    nav.selTargetAngle = normalizeAngle(a);
 }
 
 static float getTargetDist(void* inRefcon)
 {
-    Navigator n = *(reinterpret_cast<Navigator*>(inRefcon));
-    return n.selTargetDist;
+    return nav.selTargetDist;
 }
 
 static void setTargetDist(void* inRefcon, float a)
 {
-    Navigator n = *(reinterpret_cast<Navigator*>(inRefcon));
-    n.selTargetDist = a;
+    nav.selTargetDist = a;
 }
 
 static float getZpu(void* inRefcon)
 {
-    Navigator n = *(reinterpret_cast<Navigator*>(inRefcon));
-    return n.selTrack;
+    return nav.selTrack;
 }
 
 static void setZpu(void* inRefcon, float a)
 {
-    Navigator n = *(reinterpret_cast<Navigator*>(inRefcon));
-    n.selTrack = normalizeAngle(a);
+    nav.selTrack = normalizeAngle(a);
 }
 
 static float getCrosstrack(void* inRefcon)
 {
-    Navigator n = *(reinterpret_cast<Navigator*>(inRefcon));
-    return n.outXtk;
+    return nav.outXtk;
 }

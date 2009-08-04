@@ -305,7 +305,7 @@ PLUGIN_API int XPluginStart(char *outName, char *outSig, char *outDesc)
     // RSBN set navigation mode
     rsbnDatarefs.push_back(XPLMRegisterDataAccessor("rsbn/nav/in/mode",
             xplmType_Int,                                // The types we support
-            FALSE,                                             // Writable
+            TRUE,                                             // Writable
             getNavMode, setNavMode,                              // Integer accessors
             NULL, NULL,                                    // Float accessors
             NULL, NULL,                                    // Doubles accessors
@@ -317,7 +317,7 @@ PLUGIN_API int XPluginStart(char *outName, char *outSig, char *outDesc)
     // RSBN set navigation mode
     rsbnDatarefs.push_back(XPLMRegisterDataAccessor("rsbn/nav/in/azimuth",
             xplmType_Float,                                // The types we support
-            FALSE,                                             // Writable
+            TRUE,                                             // Writable
             NULL, NULL,                                 // Integer accessors
             getAzimuth, setAzimuth,                         // Float accessors
             NULL, NULL,                                    // Doubles accessors
@@ -329,7 +329,7 @@ PLUGIN_API int XPluginStart(char *outName, char *outSig, char *outDesc)
     // RSBN set orbita distance
     rsbnDatarefs.push_back(XPLMRegisterDataAccessor("rsbn/nav/in/orbita",
             xplmType_Float,                                // The types we support
-            FALSE,                                             // Writable
+            TRUE,                                             // Writable
             NULL, NULL,                                 // Integer accessors
             getOrbita, setOrbita,                         // Float accessors
             NULL, NULL,                                    // Doubles accessors
@@ -341,7 +341,7 @@ PLUGIN_API int XPluginStart(char *outName, char *outSig, char *outDesc)
     // RSBN set target angle
     rsbnDatarefs.push_back(XPLMRegisterDataAccessor("rsbn/nav/in/t_angle",
             xplmType_Float,                                // The types we support
-            FALSE,                                             // Writable
+            TRUE,                                             // Writable
             NULL, NULL,                                 // Integer accessors
             getTargetAngle, setTargetAngle,                         // Float accessors
             NULL, NULL,                                    // Doubles accessors
@@ -353,7 +353,7 @@ PLUGIN_API int XPluginStart(char *outName, char *outSig, char *outDesc)
     // RSBN set target distance
     rsbnDatarefs.push_back(XPLMRegisterDataAccessor("rsbn/nav/in/t_dist",
             xplmType_Float,                                // The types we support
-            FALSE,                                             // Writable
+            TRUE,                                             // Writable
             NULL, NULL,                                 // Integer accessors
             getTargetDist, setTargetDist,                         // Float accessors
             NULL, NULL,                                    // Doubles accessors
@@ -365,7 +365,7 @@ PLUGIN_API int XPluginStart(char *outName, char *outSig, char *outDesc)
     // RSBN set target distance
     rsbnDatarefs.push_back(XPLMRegisterDataAccessor("rsbn/nav/in/zpu",
            xplmType_Float,                                // The types we support
-           FALSE,                                             // Writable
+           TRUE,                                             // Writable
            NULL, NULL,                                 // Integer accessors
            getZpu, setZpu,                         // Float accessors
            NULL, NULL,                                    // Doubles accessors
