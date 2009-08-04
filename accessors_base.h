@@ -45,11 +45,7 @@ static double getBearingTo(void *inRefcon)
     return (*d).getInverseBearing();
 }
 
-static double getBearingToMag(void *inRefcon)
-{
-    Database* d = reinterpret_cast<Database*>(inRefcon);
-    return (*d).getInverseBearing() + XPLMGetDataf(proxy.magVarRef);
-}
+static double getBearingToMag(void *inRefcon);
 
 static double getBeaconLat(void *inRefcon)
 {

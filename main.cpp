@@ -8,8 +8,12 @@
 #include "libs.h"
 #include "utils.h"
 #include "gate.h"
+#include "navigator.h"
+#include "accessors_base.h"
+#include "accessors_nav.h"
 
 static Database rsbn;
+static Navigator nav;
 static Gate proxy;
 static vector<XPLMDataRef> rsbnDatarefs;
 static XPLMMenuID rsbnMenu;
@@ -17,11 +21,18 @@ static int rsbnMenuItem = -1;
 static XPWidgetID gWindow = NULL;
 static bool plugIsEnabled = TRUE;
 
-#include "accessors_base.h"
+static double getBearingToMag(void *inRefcon)
+{
+    Database* d = reinterpret_cast<Database*>(inRefcon);
+    return (*d).getInverseBearing() + XPLMGetDataf(proxy.magVarRef);
+}
 
 static float updateRsbn(float elapsedSinceLastCall, float elapsedTimeSinceLastFlightLoop,  int counter, void *refcon)
 {
-    if(plugIsEnabled) proxy.update(counter);
+    if(plugIsEnabled) {
+        proxy.update(counter);
+        nav.update(rsbn.getBearing(), rsbn.getDistance());
+    }
     return UPDATE_INTERVAL;
 }
 
@@ -290,8 +301,80 @@ PLUGIN_API int XPluginStart(char *outName, char *outSig, char *outDesc)
             NULL, NULL,                                    // Raw data accessors
             &rsbn, NULL));
     
+    // RSBN set navigation mode
+    rsbnDatarefs.push_back(XPLMRegisterDataAccessor("rsbn/nav/in/mode",
+            xplmType_Int,                                // The types we support
+            FALSE,                                             // Writable
+            getNavMode, setNavMode,                              // Integer accessors
+            NULL, NULL,                                    // Float accessors
+            NULL, NULL,                                    // Doubles accessors
+            NULL, NULL,                                    // Int array accessors
+            NULL, NULL,                                    // Float array accessors
+            NULL, NULL,                                    // Raw data accessors
+            &nav, &nav));
+    
+    // RSBN set navigation mode
+    rsbnDatarefs.push_back(XPLMRegisterDataAccessor("rsbn/nav/in/azimuth",
+            xplmType_Float,                                // The types we support
+            FALSE,                                             // Writable
+            NULL, NULL,                                 // Integer accessors
+            getAzimuth, setAzimuth,                         // Float accessors
+            NULL, NULL,                                    // Doubles accessors
+            NULL, NULL,                                    // Int array accessors
+            NULL, NULL,                                    // Float array accessors
+            NULL, NULL,                                    // Raw data accessors
+            &nav, &nav));
+
+    // RSBN set orbita distance
+    rsbnDatarefs.push_back(XPLMRegisterDataAccessor("rsbn/nav/in/orbita",
+            xplmType_Float,                                // The types we support
+            FALSE,                                             // Writable
+            NULL, NULL,                                 // Integer accessors
+            getOrbita, setOrbita,                         // Float accessors
+            NULL, NULL,                                    // Doubles accessors
+            NULL, NULL,                                    // Int array accessors
+            NULL, NULL,                                    // Float array accessors
+            NULL, NULL,                                    // Raw data accessors
+            &nav, &nav));
+ 
+    // RSBN set target angle
+    rsbnDatarefs.push_back(XPLMRegisterDataAccessor("rsbn/nav/in/t_angle",
+            xplmType_Float,                                // The types we support
+            FALSE,                                             // Writable
+            NULL, NULL,                                 // Integer accessors
+            getTargetAngle, setTargetAngle,                         // Float accessors
+            NULL, NULL,                                    // Doubles accessors
+            NULL, NULL,                                    // Int array accessors
+            NULL, NULL,                                    // Float array accessors
+            NULL, NULL,                                    // Raw data accessors
+            &nav, &nav));
+    
+    // RSBN set target distance
+    rsbnDatarefs.push_back(XPLMRegisterDataAccessor("rsbn/nav/in/t_dist",
+            xplmType_Float,                                // The types we support
+            FALSE,                                             // Writable
+            NULL, NULL,                                 // Integer accessors
+            getTargetDist, setTargetDist,                         // Float accessors
+            NULL, NULL,                                    // Doubles accessors
+            NULL, NULL,                                    // Int array accessors
+            NULL, NULL,                                    // Float array accessors
+            NULL, NULL,                                    // Raw data accessors
+            &nav, &nav));
+    
+    // RSBN set target distance
+    rsbnDatarefs.push_back(XPLMRegisterDataAccessor("rsbn/nav/in/zpu",
+           xplmType_Float,                                // The types we support
+           FALSE,                                             // Writable
+           NULL, NULL,                                 // Integer accessors
+           getZpu, setZpu,                         // Float accessors
+           NULL, NULL,                                    // Doubles accessors
+           NULL, NULL,                                    // Int array accessors
+           NULL, NULL,                                    // Float array accessors
+           NULL, NULL,                                    // Raw data accessors
+           &nav, &nav));
+    
     // Assign the gateway objects
-    proxy.db = &rsbn;   
+    proxy.db = &rsbn;
     proxy.attachDatarefs();
     
     // Register the main callback
