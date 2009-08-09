@@ -38,5 +38,6 @@ public:
     
     Navigator();
 private:
+    void changeLampState(double acfBrg, double acfDist);
     void computeSrp(double  acfBrg, double acfDist);
 };
