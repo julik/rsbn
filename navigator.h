@@ -8,6 +8,12 @@ public:
     // Cross-track deviation in kilometers
     double outXtk;
     
+    // Set to TRUE if the lamp has to blink
+    bool outApproaching;
+    
+    // Set to TRUE if the lamp has to blink
+    bool outOverflying;
+    
     // Selected RSBN computer mode
     int selMode;
     

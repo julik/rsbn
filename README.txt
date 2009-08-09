@@ -63,13 +63,19 @@ The following datarefs are made available to implement the navigation functional
 		rsbn/nav/in/t_angle (float, writable) - bearing from the beacon to the target point (SRP mode)
 		rsbn/nav/in/t_dist (float, writable) - distance from the beacon to the target point (SRP mode)
 		rsbn/nav/in/zpu (float, writable) - track heading to target (SRP mode)
+		rsbn/nav/in/nav1_override (int, writable) - set to 1 to "hijack" the nav1 receiver and HSI for RSBN instead of VOR
 		
+
 By using these the following datarefs will be provided for reading:
 
 		rsbn/nav/out/xtk (float, readonly) - cross-track deviation in km, negative is "right of track"
 		rsbn/nav/out/approaching (int, readonly) - set to 1 when approaching target
 		rsbn/nav/out/overflying (int, readonly) - set to 1 when overflying target
 		
+When nav override is engaged the RSBN set will feed your HSI gage with the selected track as your OBS
+and the crosstrack deviation on the OBS needle, counting "dots" in kilometers (full OBS needle deflection
+is a deviation from track of about 5-6 km)
+
 ## DATASETS
 
 The plugin ships with two datasets. One is for the former USSR and DDR (German Democratic Republic), the other

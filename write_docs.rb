@@ -54,10 +54,11 @@ class FH
   end
 end
 
-FileUtils.mkdir_p("dist/data")
+dist = "rsbn"
+FileUtils.mkdir_p("#{dist}/data")
 
 %w( README.txt data/ussr.dat data/cis.dat ).map{|f| FH.new(f) }.each do | doc_file |
-  d = "dist/" + doc_file.html_name
+  d = "#{dist}/" + doc_file.html_name
   puts d
   File.open(d, "w") do | f |
       f << doc_file.to_s
@@ -65,11 +66,11 @@ FileUtils.mkdir_p("dist/data")
 end
 
 %w( mac.xpl win.xpl lin.xpl).each do | plug |
-  FileUtils.cp(plug, "dist/") if File.exist?(plug)
+  FileUtils.cp(plug, "#{dist}/") if File.exist?(plug)
 end
 
 Dir.glob("data/*.dat").each do | dat_file |
-  FileUtils.cp(dat_file, "dist/data/")
+  FileUtils.cp(dat_file, "#{dist}/data/")
 end
 
 __END__

@@ -1,4 +1,4 @@
-#define PLUGIN_VERSION  "0.0.1"
+#define PLUGIN_VERSION  "0.0.2"
 #define PLUGIN_SIGNATURE "com.julik.rsbn"
 #define USSR_DATA (void*)1
 #define CIS_DATA (void*)2

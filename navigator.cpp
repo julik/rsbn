@@ -102,7 +102,7 @@ void Navigator::update(double acfBrg, double acfDist)
 		
 		outXtk = xtkOnArc(selOrbita, FALSE, acfBrg, acfDist);
 	
-	} else if (MODE_ORBITA_CCW == selMode) {
+	} else if (MODE_ORBITA_CW == selMode) {
 		
 		outXtk = xtkOnArc(selOrbita, TRUE, acfBrg, acfDist);
 	
