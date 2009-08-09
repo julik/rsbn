@@ -1,6 +1,7 @@
 #include "gate.h"
 #include "libs.h"
-#define CYCLES_BEFORE_LOOKUP 10
+static const int CYCLES_BEFORE_LOOKUP = 10;
+
 Gate::Gate()
 {
     db = NULL;

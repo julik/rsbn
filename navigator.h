@@ -1,4 +1,5 @@
 #include "libs.h"
+
 using namespace std;
 
 class Navigator

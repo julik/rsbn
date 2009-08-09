@@ -3,17 +3,10 @@ Common spherical trig functions used by the plugin
 */
 
 #include <math.h>
-#define PI 3.14159265358979323846
-#define R_KAVRAISKOGO 6373
-#define NINE_MINUTES_IN_RAD 0.00261799388
+#include "trig.h"
 
-inline double deg2rad(double deg) {
-    return (deg * PI / 180);
-}
-
-inline double rad2deg(double rad) {
-    return (rad * 180 / PI);
-}
+static const double R_KAVRAISKOGO = 6373;
+static const double NINE_MINUTES_IN_RAD = 0.00261799388;
 
 // Convert geographical latitude on the geoid to 
 // latitude on the Kavraisky spheroid

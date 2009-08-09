@@ -1,19 +1,12 @@
 #include "navigator.h"
-#define MODE_NONE 0
-#define MODE_AZIMUT_NA 1
-#define MODE_AZIMUT_OT 2
-#define MODE_ORBITA_CCW 3
-#define MODE_ORBITA_CW 4
-#define MODE_SRP 5
+#include "trig.h"
 
-#define PI 3.14159265358979323846
-inline double deg2rad(double deg) {
-    return (deg * PI / 180);
-}
-
-inline double rad2deg(double rad) {
-    return (rad * 180 / PI);
-}
+static const int MODE_NONE = 0;
+static const int MODE_AZIMUT_NA = 1;
+static const int MODE_AZIMUT_OT = 2;
+static const int MODE_ORBITA_CCW = 3;
+static const int MODE_ORBITA_CW = 4;
+static const int MODE_SRP = 5;
 
 /**
 rsbn/nav/in/mode // 0 is none, 1 - azimut na, 2 - azimut ot, 3 - orbita lev, 4 - orbita prav, 5 - SRP
@@ -27,7 +20,6 @@ rsbn/nav/in/target/heading
 rsbn/nav/out/xtk // cross-track deviation in KM. A deviation of 5.4 kilometers will FULLY deflect the HSI, left deviation is negative
 rsbn/nav/out/approaching // set to 1 when we are approaching target, < 10 deg on track and < 10 km on distance
 rsbn/nav/out/overflying // set to 1 when we are oveflying the target (< 1.1 deg on track and < 1.1 km on distance)
-rsbn/nav/out/nav_captured // set to 1 when the beacon is being received and nav is captured
 **/
 
 Navigator::Navigator()
