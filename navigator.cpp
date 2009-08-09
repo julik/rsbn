@@ -39,6 +39,8 @@ Navigator::Navigator()
     selTargetAngle = 0;
     selTargetDist = 0;
     selTrack = 0;
+    outApproaching = FALSE;
+    outOverflying = FALSE;
 }
 
 // Compute cross-track on a certain radial when flying FROM the point.
@@ -88,6 +90,7 @@ void Navigator::computeSrp(double acfBrg, double acfDist)
     
 }
 
+// TODO - rectify limits
 void Navigator::changeLampState(double acfBrg, double acfDist)
 {
     bool inAz, inDist, appr;

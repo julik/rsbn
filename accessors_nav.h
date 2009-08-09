@@ -69,3 +69,13 @@ static float getCrosstrack(void* inRefcon)
 {
     return nav.outXtk;
 }
+
+static int getOverflying(void* inRefcon)
+{
+    return nav.outOverflying;
+}
+
+static int getApproaching(void* inRefcon)
+{
+    return nav.outApproaching;
+}
