@@ -36,7 +36,7 @@ These two datarefs specify the current RSBN channel and can be coupled to usual 
 instruments made using other plugins. The default channel that is tuned when the instrument is initialized
 is 10k, that is Tallinn in Estonia and the Baltic and Chkalovsky when in the Moscow region.
 
-It makes the following datarefs available for reading:
+It makes the following datarefs available for reading for basic navigation purposes:
 
 		rsbn/receiving 		(int, readonly) - will contain 1 if the beacon is being received now
 		rsbn/overflight (int, readonly) - will contain 1 if the beacon is being overflown now (the distance to the beacon
@@ -49,6 +49,27 @@ It makes the following datarefs available for reading:
 		rsbn/beacon_lat		(double, readonly) - geo latitude of the current beacon (can be used for calculations)
 		rsbn/beacon_lon		(double, readonly) - geo longitude of the current beacon (can be used for calculations)
 
+The following datarefs are made available to implement the navigation functionalities (not evailable on all airplanes)
+
+		rsbn/nav/mode	(int, writable) - the selected navigation mode:
+				0 - navigation is disengaged
+				1 - radial from
+				2 - radial to
+				3 - arc counterclockwise
+				4 - arc clockwise
+				5 - SRP (arbitrary track)
+		rsbn/nav/in/azimuth (float, writable) - the selected radial, in degrees
+		rsbn/nav/in/orbita (float, writable) - the selected arc radius, in KM
+		rsbn/nav/in/t_angle (float, writable) - bearing from the beacon to the target point (SRP mode)
+		rsbn/nav/in/t_dist (float, writable) - distance from the beacon to the target point (SRP mode)
+		rsbn/nav/in/zpu (float, writable) - track heading to target (SRP mode)
+		
+By using these the following datarefs will be provided for reading:
+
+		rsbn/nav/out/xtk (float, readonly) - cross-track deviation in km, negative is "right of track"
+		rsbn/nav/out/approaching (int, readonly) - set to 1 when approaching target
+		rsbn/nav/out/overflying (int, readonly) - set to 1 when overflying target
+		
 ## DATASETS
 
 The plugin ships with two datasets. One is for the former USSR and DDR (German Democratic Republic), the other

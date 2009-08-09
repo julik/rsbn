@@ -362,7 +362,7 @@ PLUGIN_API int XPluginStart(char *outName, char *outSig, char *outDesc)
             NULL, NULL,                                    // Raw data accessors
             &nav, &nav));
     
-    // RSBN set target distance
+    // RSBN set track
     rsbnDatarefs.push_back(XPLMRegisterDataAccessor("rsbn/nav/in/zpu",
            xplmType_Float,                                // The types we support
            TRUE,                                             // Writable
@@ -374,7 +374,7 @@ PLUGIN_API int XPluginStart(char *outName, char *outSig, char *outDesc)
            NULL, NULL,                                    // Raw data accessors
            &nav, &nav));
     
-    // RSBN set navigation mode
+    // RSBN set crosstrack deviation, km
     rsbnDatarefs.push_back(XPLMRegisterDataAccessor("rsbn/nav/out/xtk",
             xplmType_Float,                                // The types we support
             FALSE,                                             // Writable
@@ -384,7 +384,8 @@ PLUGIN_API int XPluginStart(char *outName, char *outSig, char *outDesc)
             NULL, NULL,                                    // Int array accessors
             NULL, NULL,                                    // Float array accessors
             NULL, NULL,                                    // Raw data accessors
-            &nav, &nav));
+            &nav, NULL));
+            
     // Assign the gateway objects
     proxy.db = &rsbn;
     proxy.attachDatarefs();

@@ -78,10 +78,12 @@ void Navigator::computeSrp(double acfBrg, double acfDist)
     double alphaDiff = acos( (distToPoint + selTargetDist - acfDist) / (-1 * (distToPoint * selTargetDist)));
     
     // Determine the angle from the track to the target line
-    double angularDeviation = deg2rad(selTrack - selTargetAngle - alphaDiff);
+    double angularDeviation = deg2rad(selTrack - selTargetAngle) - alphaDiff;
     
     // Using the distance to target, compute the cross-track
     outXtk = sin(angularDeviation) * distToPoint;
+    // Using the same thing, compute distance to target
+    distToTarget = cos(angularDeviation) * distToPoint;
     
 }
 
