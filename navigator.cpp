@@ -1,5 +1,11 @@
 #include "navigator.h"
+#include "math.h"
 #include "trig.h"
+
+#ifndef TRUE
+    #define TRUE 1
+    #define FALSE 0
+#endif
 
 static const int MODE_NONE = 0;
 static const int MODE_AZIMUT_NA = 1;
@@ -7,20 +13,9 @@ static const int MODE_AZIMUT_OT = 2;
 static const int MODE_ORBITA_CCW = 3;
 static const int MODE_ORBITA_CW = 4;
 static const int MODE_SRP = 5;
-
-/**
-rsbn/nav/in/mode // 0 is none, 1 - azimut na, 2 - azimut ot, 3 - orbita lev, 4 - orbita prav, 5 - SRP
-rsbn/nav/capture // set to 1 to override nav1
-rsbn/nav/in/azimuth
-rsbn/nav/in/orbita
-rsbn/nav/in/target/bearing
-rsbn/nav/in/target/distance
-rsbn/nav/in/target/heading
-
-rsbn/nav/out/xtk // cross-track deviation in KM. A deviation of 5.4 kilometers will FULLY deflect the HSI, left deviation is negative
-rsbn/nav/out/approaching // set to 1 when we are approaching target, < 10 deg on track and < 10 km on distance
-rsbn/nav/out/overflying // set to 1 when we are oveflying the target (< 1.1 deg on track and < 1.1 km on distance)
-**/
+static const float AZIMUT_LIMIT = 1.1;
+static const float DIST_OVERFLIGHT_LIMIT = 1.1;
+static const float DIST_APPROACHING_LIMIT = 10;
 
 Navigator::Navigator()
 {
@@ -42,8 +37,7 @@ double xtkOnRadial(double onRadialDeg, bool isFrom, double acfBrg, double acfDis
 	// the sine of the angle between the bearing that we are flying and the bearing we want to have
 	// We subtract it that way so that LEFT deviation (CCW) is negative and RIGHT (CW) dev
 	// is positive
-	double angularDevRad = deg2rad(acfBrg) - deg2rad(onRadialDeg);
-	
+	double angularDevRad = deg2rad(acfBrg) - deg2rad(onRadialDeg + (isFrom ? 0 : 180));
 	double xtk = sin(angularDevRad) * acfDist;
 	return xtk;
 }
@@ -88,9 +82,9 @@ void Navigator::changeLampState(double acfBrg, double acfDist)
     bool inAz, inDist, appr;
     inAz = FALSE; inDist = FALSE; appr = FALSE;
     
-    if(fabs(acfBrg - selAzimuth) < 1.1) inAz = TRUE;
-    if(fabs(acfDist - selOrbita) < 1.1) inDist = TRUE;
-    if(fabs(acfDist - selOrbita) < 10) appr = TRUE;
+    if(fabs(acfBrg - selAzimuth) < AZIMUT_LIMIT) inAz = TRUE;
+    if(fabs(acfDist - selOrbita) < DIST_OVERFLIGHT_LIMIT) inDist = TRUE;
+    if(fabs(acfDist - selOrbita) < DIST_APPROACHING_LIMIT) appr = TRUE;
     
     if (inAz && inDist) {
         outOverflying = true;

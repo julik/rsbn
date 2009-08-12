@@ -1,12 +1,10 @@
-#include "libs.h"
-
 using namespace std;
 
 class Navigator
 {
 public:
     
-    // Cross-track deviation in kilometers
+    // Cross-track deviation in kilometers, negative is right-of-track
     double outXtk;
     
     // Set to TRUE if the lamp has to blink
@@ -34,8 +32,6 @@ public:
     double selTrack;
     
     void update(double acfBrg, double acfDist);
-    void snatchNeedles();
-    void releaseNeedles();
     
     Navigator();
 private:

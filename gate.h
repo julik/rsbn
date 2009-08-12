@@ -1,10 +1,12 @@
 #include "database.h"
+#include "navigator.h"
 #include "libs.h"
 
 class Gate {
 public:
     Database * db;
-        
+    Navigator * nav;
+    
     // XP datarefs. Will be initialized when the database is created by the plugin
     XPLMDataRef acfLatRef;
     XPLMDataRef acfLonRef;
@@ -12,20 +14,20 @@ public:
     
     XPLMDataRef magVarRef;
     
-    XPLMDataRef localMapLeft;
-    XPLMDataRef localMapBottom;
-    XPLMDataRef localMapRight;
-    XPLMDataRef localMapTop;
+    XPLMDataRef cdiDevRef;
+    XPLMDataRef navOverrideRef;
     
     Gate();
     
     void update(int counter);
-        
     void attachDatarefs();
     
-    void drawToMap();
-    
+    void setNavOverride(int);
+    bool getNavOverride();
+
 private:
+    
+    int navOverride;
     
     void drawCircle(float radius, float atX, float atY);
 

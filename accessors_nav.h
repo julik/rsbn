@@ -79,3 +79,13 @@ static int getApproaching(void* inRefcon)
 {
     return nav.outApproaching;
 }
+
+static int getNavOverride(void* inRefcon)
+{
+    return proxy.getNavOverride();
+}
+
+static void setNavOverride(void* inRefcon, int newV)
+{
+    proxy.setNavOverride(newV);
+}

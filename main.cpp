@@ -409,9 +409,22 @@ PLUGIN_API int XPluginStart(char *outName, char *outSig, char *outDesc)
             NULL, NULL,                                    // Float array accessors
             NULL, NULL,                                    // Raw data accessors
             &nav, NULL));
+
+    // Annunciator "target reached"
+    rsbnDatarefs.push_back(XPLMRegisterDataAccessor("rsbn/nav/in/nav1_override",
+            xplmType_Int,                                // The types we support
+            FALSE,                                             // Writable
+            getNavOverride, setNavOverride,                 // Integer accessors
+            NULL, NULL,                                    // Float accessors
+            NULL, NULL,                                    // Doubles accessors
+            NULL, NULL,                                    // Int array accessors
+            NULL, NULL,                                    // Float array accessors
+            NULL, NULL,                                    // Raw data accessors
+            NULL, NULL));
     
     // Assign the gateway objects
     proxy.db = &rsbn;
+    proxy.nav = &nav;
     proxy.attachDatarefs();
     
     // Register the main callback

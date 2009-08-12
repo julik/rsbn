@@ -1,6 +1,6 @@
 SDK=/opt/x-plane/SDK
 
-TARGET=lin.xpl
+TARGET=build/lin.xpl
 HEADERS=$(wildcard *.h)
 SOURCES=$(wildcard *.cpp)
 OBJECTS=$(SOURCES:.cpp=.o)
@@ -16,6 +16,7 @@ all: $(TARGET)
 	$(CXX) $(CXXFLAGS) -c $<
 	
 $(TARGET): $(OBJECTS)
+	mkdir -p build
 	$(CXX) -o $(TARGET) $(LNFLAGS) $(OBJECTS) $(LIBS)
 
 clean:

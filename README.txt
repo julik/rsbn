@@ -49,30 +49,34 @@ It makes the following datarefs available for reading for basic navigation purpo
 		rsbn/beacon_lat		(double, readonly) - geo latitude of the current beacon (can be used for calculations)
 		rsbn/beacon_lon		(double, readonly) - geo longitude of the current beacon (can be used for calculations)
 
-The following datarefs are made available to implement the navigation functionalities (not evailable on all airplanes)
+The following datarefs are made available to implement the navigation functionality (not evailable on all airplanes,
+this are features of the RSBN-2 set which was installed in IL-18s, Tu-134s and An-24/26/30/32 in long-range configs)
 
 		rsbn/nav/mode	(int, writable) - the selected navigation mode:
 				0 - navigation is disengaged
-				1 - radial from
-				2 - radial to
-				3 - arc counterclockwise
-				4 - arc clockwise
+				1 - radial from (AZIMUT OT)
+				2 - radial to (AZIMUT NA)
+				3 - arc counterclockwise (ORBITA LEV)
+				4 - arc clockwise (ORBITA PRAV)
 				5 - SRP (arbitrary track)
-		rsbn/nav/in/azimuth (float, writable) - the selected radial, in degrees
-		rsbn/nav/in/orbita (float, writable) - the selected arc radius, in KM
+		rsbn/nav/in/azimuth (float, writable) - the selected radial, in degrees (controls modes
+				1 and 2 and the indication for overflight/approaching destination in all modes)
+		rsbn/nav/in/orbita (float, writable) - the selected arc radius, in KM  (controls modes
+				indication in modes 1 and 2 and the arc radius for modes 3 and 4)
 		rsbn/nav/in/t_angle (float, writable) - bearing from the beacon to the target point (SRP mode)
 		rsbn/nav/in/t_dist (float, writable) - distance from the beacon to the target point (SRP mode)
 		rsbn/nav/in/zpu (float, writable) - track heading to target (SRP mode)
-		rsbn/nav/in/nav1_override (int, writable) - set to 1 to "hijack" the nav1 receiver and HSI for RSBN instead of VOR
+		rsbn/nav/in/nav1_override (int, writable) - set to 1 to "hijack" the first CDI for RSBN instead of VOR
 		
 
 By using these the following datarefs will be provided for reading:
 
 		rsbn/nav/out/xtk (float, readonly) - cross-track deviation in km, negative is "right of track"
+				and is analogous to the CDI needle deflecting LEFT
 		rsbn/nav/out/approaching (int, readonly) - set to 1 when approaching target
 		rsbn/nav/out/overflying (int, readonly) - set to 1 when overflying target
 		
-When nav override is engaged the RSBN set will feed your HSI gage with the selected track as your OBS
+When nav override is engaged the RSBN set will feed your CDI gage with the selected track as your OBS
 and the crosstrack deviation on the OBS needle, counting "dots" in kilometers (full OBS needle deflection
 is a deviation from track of about 5-6 km)
 

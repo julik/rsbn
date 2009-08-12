@@ -1,6 +1,6 @@
 SDK=/opt/x-plane/SDK
 PLUGINS=/Users/julik/Desktop/X-Plane-Beta/Resources/plugins/rsbn/
-TARGET=mac.xpl
+TARGET=build/mac.xpl
 HEADERS=$(wildcard *.h)
 SOURCES=$(wildcard *.cpp)
 OBJECTS=$(SOURCES:.cpp=.o)
@@ -25,7 +25,14 @@ all: $(TARGET)
 	$(CXX) $(CXXFLAGS) -c $<
 	
 $(TARGET): $(OBJECTS)
+	mkdir -p build
 	$(CXX) -o $(TARGET) $(LNFLAGS) $(OBJECTS) $(LIBS)
+	$(CXX) -o nav-tester $(LNFLAGS) nav-tester.o navigator.o
+	chmod a+x nav-tester
+
+test:
+	$(CXX) -o nav-tester nav-tester.cpp navigator.o
+	./nav-tester
 
 clean:
 	rm -f $(OBJECTS) $(TARGET)
@@ -40,4 +47,3 @@ dist: $(TARGET)
 	mkdir -p dist
 	mv -f $(TARGET) dist/
 	ruby write_docs.rb	
-
