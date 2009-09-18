@@ -40,9 +40,7 @@ void Database::findNearest()
     // Optimize - if the tunedBc beacon is already found and preselected keep it,
     // don't alloc any iterators and only check for distance. If it's out of range it's
     // time to search again
-    if (isTuned &&
-        tunedBc.hasCode(selStrobe, selNul) &&
-        tunedBc.isInRangeOf(curLat, curLon, curElev)) return;
+    if (tunedBeaconWithinRange()) return;
     
     vector<Beacon> shortList;
     vector<Beacon>::iterator it =  begin();
@@ -69,6 +67,12 @@ void Database::findNearest()
         }
     }
     isTuned = true;
+}
+
+bool Database::tunedBeaconWithinRange()
+{
+    return (isTuned && tunedBc.hasCode(selStrobe, selNul) &&
+        tunedBc.isInRangeOf(curLat, curLon, curElev));
 }
 
 float Database::getDistance()
